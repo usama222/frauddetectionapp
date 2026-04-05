@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Admin{% endblock %}</title>
+
+    <!-- DashLite CSS -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='admin/images/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/css/dashlite9b70.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/css/theme9b70.css') }}">
+</head>
+
+<body class="nk-body bg-lighter npc-general has-sidebar">
+
+<div class="nk-app-root">
+    <div class="nk-main">
+
+        <!-- SIDEBAR INCLUDE -->
+        {% include "admin/partials/sidebar.html" %}
+
+        <!-- MAIN CONTENT -->
+        <div class="nk-wrap">
+            <div class="nk-content">
+                {% block content %}{% endblock %}
+            </div>
+
+            <!--  FOOTER INCLUDE -->
+            {% include "admin/partials/footer.html" %}
+        </div>
+
+    </div>
+</div>
+
+<!-- DashLite JS -->
+<script src="{{ url_for('static', filename='admin/js/bundle9b70.js') }}"></script>
+<script src="{{ url_for('static', filename='admin/js/scripts9b70.js') }}"></script>
+
+<!-- OPTIONAL (demo only – FYP mein skip bhi kar sakte ho) -->
+<!--<script src="{{ url_for('static', filename='admin/js/demo-settings9b70.js') }}"></script>-->
+<!--<script src="{{ url_for('static', filename='admin/js/charts/gd-default9b70.js') }}"></script>-->
+
+</body>
+</html>

@@ -1,0 +1,252 @@
+{% extends "admin/layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="nk-content-head mb-4">
+        <h3 class="nk-block-title page-title">System Dashboard</h3>
+        <p class="text-soft">Overall system monitoring & activity</p>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row g-4 mb-4">
+
+     <div class="col-md-4">
+    <div class="card card-bordered card-full">
+        <div class="card-inner">
+
+            <!-- TITLE -->
+            <div class="card-title-group align-start mb-0">
+                <div class="card-title">
+                    <h6 class="title">Total Users</h6>
+                </div>
+                <div class="card-tools">
+                    <em class="card-hint icon ni ni-users-fill"
+                        data-bs-toggle="tooltip"
+                        title="Registered users in system"></em>
+                </div>
+            </div>
+
+            <!-- AMOUNT + TREND -->
+            <div class="card-amount">
+                <span class="amount">{{ total_users }}</span>
+
+                {% if user_growth >= 0 %}
+                    <span class="change up text-success">
+                        <em class="icon ni ni-arrow-long-up"></em>{{ user_growth }}%
+                    </span>
+                {% else %}
+                    <span class="change down text-danger">
+                        <em class="icon ni ni-arrow-long-down"></em>{{ user_growth | abs }}%
+                    </span>
+                {% endif %}
+            </div>
+
+            <!-- MINI DATA -->
+            <div class="invest-data">
+                <div class="invest-data-amount g-2">
+                    <div class="invest-data-history">
+                        <div class="title">This Month</div>
+                        <div class="amount">{{ users_this_month }}</div>
+                    </div>
+                    <div class="invest-data-history">
+                        <div class="title">Last Month</div>
+                        <div class="amount">{{ users_last_month }}</div>
+                    </div>
+                </div>
+
+                <!-- MINI CHART -->
+                <div class="invest-data-ck">
+                    <canvas class="iv-data-chart" id="usersMiniChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+        <div class="col-md-3">
+            <div class="card card-bordered">
+                <div class="card-inner text-center">
+                    <em class="icon ni ni-grid text-info fs-28"></em>
+                    <h6>Total Applications</h6>
+                    <h3>{{ total_apps }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card card-bordered">
+                <div class="card-inner text-center">
+                    <em class="icon ni ni-comments text-success fs-28"></em>
+                    <h6>Total Reviews</h6>
+                    <h3>{{ total_reviews }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card card-bordered">
+                <div class="card-inner text-center">
+                    <em class="icon ni ni-shield-alert text-danger fs-28"></em>
+                    <h6>Fake Reviews</h6>
+                    <h3>{{ fake_reviews }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FRAUD STATUS OVERVIEW -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="card card-bordered text-center">
+                <div class="card-inner">
+                    <h6>Fraud Apps</h6>
+                    <h2 class="text-danger">{{ fraud_apps }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-bordered text-center">
+                <div class="card-inner">
+                    <h6>Suspicious Apps</h6>
+                    <h2 class="text-warning">{{ suspicious_apps }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-bordered text-center">
+                <div class="card-inner">
+                    <h6>Genuine Apps</h6>
+                    <h2 class="text-success">{{ genuine_apps }}</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- LATEST REVIEWS -->
+    <div class="card card-bordered mb-4">
+        <div class="card-inner">
+            <h5 class="title mb-3">Latest Reviews</h5>
+
+            <div class="nk-tb-list nk-tb-ulist">
+                <div class="nk-tb-item nk-tb-head">
+                    <div class="nk-tb-col">User</div>
+                    <div class="nk-tb-col">Review</div>
+                    <div class="nk-tb-col">Rating</div>
+                    <div class="nk-tb-col">Fake?</div>
+                </div>
+
+                {% for r in latest_reviews %}
+                <div class="nk-tb-item">
+                    <div class="nk-tb-col">
+                        {{ r.user.name }}
+                    </div>
+
+                    <div class="nk-tb-col">
+                        {{ r.review_text[:40] }}...
+                    </div>
+
+                    <div class="nk-tb-col">
+                        {{ r.rating }}/5
+                    </div>
+
+                    <div class="nk-tb-col">
+                        {% if r.is_fake %}
+                            <span class="badge bg-danger">Yes</span>
+                        {% else %}
+                            <span class="badge bg-success">No</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT FRAUD ANALYSIS -->
+    <div class="card card-bordered">
+        <div class="card-inner">
+            <h5 class="title mb-3">Recently Analyzed Applications</h5>
+
+            <div class="nk-tb-list nk-tb-ulist">
+                <div class="nk-tb-item nk-tb-head">
+                    <div class="nk-tb-col">Application</div>
+                    <div class="nk-tb-col">Fraud %</div>
+                    <div class="nk-tb-col">Status</div>
+                    <div class="nk-tb-col">Action</div>
+                </div>
+
+                {% for log, app in recent_apps %}
+                <div class="nk-tb-item">
+                    <div class="nk-tb-col">{{ app.name }}</div>
+
+                    <div class="nk-tb-col">
+                        {{ (log.fraud_probability * 100) | round(1) }}%
+                    </div>
+
+                    <div class="nk-tb-col">
+                        <span class="badge badge-dim
+                            {% if log.suggested_status == 'Fraud' %} bg-danger
+                            {% elif log.suggested_status == 'Suspicious' %} bg-warning
+                            {% else %} bg-success {% endif %}">
+                            {{ log.suggested_status }}
+                        </span>
+                    </div>
+
+                    <div class="nk-tb-col">
+                        <a href="{{ url_for('fraud_dashboard.application_detail', app_id=app.id) }}"
+                           class="btn btn-sm btn-outline-primary">
+                            View
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+const ctxUsers = document.getElementById('usersMiniChart');
+
+if (ctxUsers) {
+    new Chart(ctxUsers, {
+        type: 'bar',
+        data: {
+            labels: {{ users_chart_labels | tojson }},
+            datasets: [{
+                data: {{ users_chart_data | tojson }},
+                backgroundColor: '#6576ff',
+                borderRadius: 4,
+                barThickness: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            },
+            scales: {
+                x: { display: false },
+                y: { display: false }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

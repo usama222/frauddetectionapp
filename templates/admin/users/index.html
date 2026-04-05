@@ -1,0 +1,154 @@
+{% extends "admin/layout.html" %}
+{% block title %}Users{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="nk-content-inner">
+        <div class="nk-content-body">
+
+            <!-- PAGE HEADER -->
+            <div class="nk-block-head nk-block-head-sm">
+                <div class="nk-block-between">
+                    <div class="nk-block-head-content">
+                        <h3 class="nk-block-title page-title">User Lists</h3>
+                        <div class="nk-block-des text-soft">
+                            <p>Total {{ users.total }} registered users.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD -->
+            <div class="card card-bordered card-stretch">
+                <div class="card-inner-group">
+
+                    <!-- SEARCH -->
+                    <div class="card-inner">
+                        <form method="get" class="form-inline flex-nowrap gx-3">
+                            <div class="form-wrap">
+                                <input type="text"
+                                       name="search"
+                                       value="{{ search }}"
+                                       class="form-control"
+                                       placeholder="Search user...">
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- TABLE -->
+                    <div class="card-inner p-0">
+                        <div class="nk-tb-list nk-tb-ulist">
+
+                            <!-- HEAD -->
+                            <div class="nk-tb-item nk-tb-head">
+                                <div class="nk-tb-col"><span class="sub-text">#</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">Name</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">Email</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">Role</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">Status</span></div>
+                                <div class="nk-tb-col nk-tb-col-tools text-end"></div>
+                            </div>
+
+                            <!-- ROWS -->
+                            {% for user in users.items %}
+                            <div class="nk-tb-item">
+                                <div class="nk-tb-col">
+                                    <span>
+                                        {{ (users.page - 1) * users.per_page + loop.index }}
+                                    </span>
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    <span class="tb-lead">{{ user.name }}</span>
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    <span>{{ user.email }}</span>
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    <span class="tb-status text-primary">
+                                        {{ user.role.role_name }}
+                                    </span>
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    {% if user.status %}
+                                        <span class="tb-status text-success">Active</span>
+                                    {% else %}
+                                        <span class="tb-status text-danger">Inactive</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="nk-tb-col nk-tb-col-tools">
+                                    <a href="{{ url_for('users.toggle_user_status', id=user.id) }}"
+                                       class="btn btn-sm
+                                       {% if user.status %}
+                                           btn-outline-danger
+                                       {% else %}
+                                           btn-outline-success
+                                       {% endif %}">
+                                        {% if user.status %}
+                                            Inactive
+                                        {% else %}
+                                            Active
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+
+                    <!-- PAGINATION -->
+                    <div class="card-inner">
+                        <ul class="pagination justify-content-start">
+
+                            <li class="page-item {% if not users.has_prev %}disabled{% endif %}">
+                                <a class="page-link"
+                                   href="{{ url_for('users.list_users',
+                                                    page=users.prev_num,
+                                                    search=search) }}">
+                                    Prev
+                                </a>
+                            </li>
+
+                            {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                                {% if page_num %}
+                                    <li class="page-item {% if page_num == users.page %}active{% endif %}">
+                                        <a class="page-link"
+                                           href="{{ url_for('users.list_users',
+                                                            page=page_num,
+                                                            search=search) }}">
+                                            {{ page_num }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">…</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            <li class="page-item {% if not users.has_next %}disabled{% endif %}">
+                                <a class="page-link"
+                                   href="{{ url_for('users.list_users',
+                                                    page=users.next_num,
+                                                    search=search) }}">
+                                    Next
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

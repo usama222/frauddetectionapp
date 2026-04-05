@@ -1,0 +1,389 @@
+{% extends "admin/layout.html" %}
+{% block title %}Fraud Detection Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- PAGE HEADER -->
+    <div class="nk-content-head mb-4">
+        <h3 class="nk-block-title page-title">Fraud Detection Dashboard</h3>
+        <p class="text-soft">System-generated fraud analysis summary</p>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+   <div class="row g-4 mb-4">
+
+        <!-- TOTAL APPS CARD -->
+        <div class="col-md-4">
+            <div class="card card-bordered card-full">
+                <div class="card-inner">
+                    <div class="card-title-group align-start mb-0">
+                        <div class="card-title">
+                            <h6 class="title">Total Apps</h6>
+                        </div>
+                        <div class="card-tools">
+                            <em class="card-hint icon ni ni-help-fill"
+                                data-bs-toggle="tooltip"
+                                title="Total applications analyzed"></em>
+                        </div>
+                    </div>
+
+                    <div class="card-amount">
+                        <span class="amount">{{ total_apps }}</span>
+                        <span class="change down text-danger">
+                            <em class="icon ni ni-arrow-long-down"></em>1.9%
+                        </span>
+                    </div>
+
+                    <div class="invest-data">
+                        <div class="invest-data-amount g-2">
+                            <div class="invest-data-history">
+                                <div class="title">This Month</div>
+                                <div class="amount">{{ this_month }}</div>
+                            </div>
+                            <div class="invest-data-history">
+                                <div class="title">This Week</div>
+                                <div class="amount">{{ this_week }}</div>
+                            </div>
+                        </div>
+                        <div class="invest-data-ck">
+                            <canvas class="iv-data-chart" id="totalAppsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FRAUD / SUSPICIOUS CARD -->
+        <div class="col-md-4">
+            <div class="card card-bordered card-full">
+                <div class="card-inner">
+                    <div class="card-title-group align-start mb-0">
+                        <div class="card-title">
+                            <h6 class="title">Fraud & Suspicious</h6>
+                        </div>
+                        <div class="card-tools">
+                            <em class="card-hint icon ni ni-alert-fill"
+                                data-bs-toggle="tooltip"
+                                title="Apps flagged by fraud system"></em>
+                        </div>
+                    </div>
+
+                    <div class="card-amount">
+                        <span class="amount text-warning">
+                            {{ fraud_apps + suspicious_apps }}
+                        </span>
+                        <span class="change up text-success">
+                            <em class="icon ni ni-arrow-long-up"></em>2.3%
+                        </span>
+                    </div>
+
+                    <div class="invest-data">
+                        <div class="invest-data-amount g-2">
+                            <div class="invest-data-history">
+                                <div class="title">Fraud</div>
+                                <div class="amount text-danger">{{ fraud_apps }}</div>
+                            </div>
+                            <div class="invest-data-history">
+                                <div class="title">Suspicious</div>
+                                <div class="amount text-warning">{{ suspicious_apps }}</div>
+                            </div>
+                        </div>
+                        <div class="invest-data-ck">
+                            <canvas class="iv-data-chart" id="fraudSuspiciousChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GENUINE CARD -->
+       <div class="col-md-4">
+            <div class="card card-bordered card-full">
+                <div class="card-inner">
+            <div class="card-title-group align-start mb-0">
+                <div class="card-title">
+                    <h6 class="title">Genuine Apps</h6>
+                </div>
+                <div class="card-tools">
+                    <em class="card-hint icon ni ni-check-circle-fill"
+                        data-bs-toggle="tooltip"
+                        title="Verified genuine applications"></em>
+                </div>
+            </div>
+
+            <div class="card-amount">
+                <span class="amount text-success">{{ genuine_apps }}</span>
+                <span class="change up text-success">
+                    <em class="icon ni ni-arrow-long-up"></em>1.1%
+                </span>
+            </div>
+
+            <div class="invest-data">
+                <div class="invest-data-amount g-2">
+                    <div class="invest-data-history">
+                        <div class="title">Positive</div>
+                        <div class="amount">
+                            {{ logs[0][0].positive_reviews if logs else 0 }}
+                        </div>
+                    </div>
+                    <div class="invest-data-history">
+                        <div class="title">Negative</div>
+                        <div class="amount">
+                            {{ logs[0][0].negative_reviews if logs else 0 }}
+                        </div>
+                    </div>
+                </div>
+                <div class="invest-data-ck">
+                    <canvas class="iv-data-chart" id="genuineAppsChart"></canvas>
+                </div>
+            </div>
+        </div>
+            </div>
+       </div>
+   </div>
+
+
+    <!-- ================= APPLICATION FRAUD SUMMARY ================= -->
+    <div class="nk-block mb-4">
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+
+            <!-- HEADER -->
+            <div class="card-inner">
+                <h5 class="title">Application Fraud Summary</h5>
+                <p class="text-soft">Sentiment trend based on analysis history.</p>
+            </div>
+
+            <!-- TABLE -->
+            <div class="card-inner p-0">
+                <div class="nk-tb-list nk-tb-ulist">
+
+                    <!-- TABLE HEAD -->
+                    <div class="nk-tb-item nk-tb-head text-center">
+                        <div class="nk-tb-col"><span>App</span></div>
+                        <div class="nk-tb-col"><span>Total Reviews</span></div>
+                        <div class="nk-tb-col"><span>Fake Reviews</span></div>
+                        <div class="nk-tb-col"><span>Fraud Probability %</span></div>
+                        <div class="nk-tb-col"><span>Sentiment</span></div>
+                        <div class="nk-tb-col"><span>Status</span></div>
+                        <div class="nk-tb-col"><span>Action</span></div>
+                    </div>
+
+                    <!-- TABLE ROWS -->
+                    {% for log, app in logs %}
+                    <div class="nk-tb-item text-center">
+
+                        <div class="nk-tb-col">
+                            <strong>{{ app.name }}</strong>
+                        </div>
+
+                        <div class="nk-tb-col">
+                            {{ log.total_reviews }}
+                        </div>
+
+                        <div class="nk-tb-col">
+                            {{ log.fake_reviews }}
+                        </div>
+
+                        <div class="nk-tb-col">
+                        {% set percent = (log.fraud_probability * 100) | round(1) %}
+
+                        <div class="progress-wrap">
+                            <div class="progress progress-sm">
+
+                                <div class="progress-bar
+                                    {% if log.fraud_probability >= 0.7 %}
+                                        bg-danger
+                                    {% elif log.fraud_probability >= 0.5 %}
+                                        bg-warning
+                                    {% else %}
+                                        bg-success
+                                    {% endif %}"
+                                    style="width: {{ percent }}%;"
+                                    data-bs-toggle="tooltip"
+                                    title="
+                                        {% if log.fraud_probability >= 0.7 %}
+                                            High Fraud Risk
+                                        {% elif log.fraud_probability >= 0.5 %}
+                                            Medium Fraud Risk
+                                        {% else %}
+                                            Low Fraud Risk
+                                        {% endif %}
+                                    ">
+                                </div>
+
+                            </div>
+
+                            <span class="progress-text
+                                {% if log.fraud_probability >= 0.7 %}
+                                    text-danger
+                                {% elif log.fraud_probability >= 0.5 %}
+                                    text-warning
+                                {% else %}
+                                    text-success
+                                {% endif %}
+                            ">
+                                {{ percent }}%
+                            </span>
+                        </div>
+                    </div>
+
+
+                        <!-- SENTIMENT (Arrow based) -->
+                        <div class="nk-tb-col">
+                            {% if log.overall_sentiment_score > 0 %}
+                                <span class="text-success">
+                                    <em class="icon ni ni-arrow-long-up"></em>
+                                    {{ (log.overall_sentiment_score * 100) | round(1) }}%
+                                </span>
+                            {% elif log.overall_sentiment_score < 0 %}
+                                <span class="text-danger">
+                                    <em class="icon ni ni-arrow-long-down"></em>
+                                    {{ (log.overall_sentiment_score * -100) | round(1) }}%
+                                </span>
+                            {% else %}
+                                <span class="text-muted">
+                                    <em class="icon ni ni-minus"></em> 0%
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- STATUS -->
+                        <div class="nk-tb-col">
+                            <span class="badge badge-dim
+                                {% if log.suggested_status == 'Fraud' %}
+                                    bg-outline-danger
+                                {% elif log.suggested_status == 'Suspicious' %}
+                                    bg-outline-warning
+                                {% else %}
+                                    bg-outline-success
+                                {% endif %}">
+                                {{ log.suggested_status }}
+                            </span>
+                        </div>
+
+                        <!-- ACTION -->
+                        <div class="nk-tb-col">
+                            <a href="{{ url_for('fraud_dashboard.application_detail', app_id=app.id) }}"
+                               class="btn btn-sm btn-outline-primary">
+                                View Details
+                            </a>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <!-- CHART SECTION -->
+    <div class="row g-4 mb-4">
+
+        <!-- Fraud Status Chart -->
+        <div class="col-md-6">
+            <div class="card card-bordered">
+                <div class="card-inner">
+                    <h6 class="title mb-3">Fraud Status Distribution</h6>
+                    <div style="max-width: 420px; height: 320px; margin: auto;">
+                        <canvas id="fraudStatusChart"></canvas>
+                    </div>
+<!--                    <canvas id="fraudStatusChart" height="200"></canvas>-->
+                </div>
+            </div>
+        </div>
+
+        <!-- Sentiment Chart -->
+        <div class="col-md-6">
+            <div class="card card-bordered" style="height: 100%">
+                <div class="card-inner"  >
+                    <h6 class="title mb-3">Overall Review Sentiment</h6>
+                    <canvas id="sentimentChart" height="200" style="margin-top: 10%"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    new Chart(document.getElementById('fraudStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Fraud', 'Suspicious', 'Genuine'],
+            datasets: [{
+                data: [{{ fraud_apps }}, {{ suspicious_apps }}, {{ genuine_apps }}],
+                backgroundColor: ['#e85347', '#f4bd0e', '#1ee0ac']
+            }]
+        }
+    });
+
+  new Chart(document.getElementById('sentimentChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Positive', 'Negative', 'Neutral'],
+        datasets: [{
+            label: 'Reviews',
+            data: [
+                {{ logs[0][0].positive_reviews if logs else 0 }},
+                {{ logs[0][0].negative_reviews if logs else 0 }},
+                {{ logs[0][0].neutral_reviews if logs else 0 }}
+            ],
+            backgroundColor: ['#1ee0ac', '#e85347', '#8094ae']
+        }]
+    }
+});
+
+    // cards
+const miniOpt = {
+    plugins: { legend: { display: false } },
+    scales: { x: { display: false }, y: { display: false } }
+};
+
+new Chart(totalAppsChart, {
+    type: 'bar',
+    data: {
+        labels: ['', '', '', '', '', '', ''],
+        datasets: [{
+            data: {{ sentiment_scores|tojson }},
+            backgroundColor: '#c4cefe'
+        }]
+    },
+    options: miniOpt
+});
+
+new Chart(fraudSuspiciousChart, {
+    type: 'bar',
+    data: {
+        labels: ['', '', '', '', '', '', ''],
+        datasets: [{
+            data: {{ fraud_probabilities|tojson }},
+            backgroundColor: '#f4bd0e'
+        }]
+    },
+    options: miniOpt
+});
+
+new Chart(genuineAppsChart, {
+    type: 'bar',
+    data: {
+        labels: ['', '', '', '', '', '', ''],
+        datasets: [{
+            data: {{ sentiment_scores|tojson }},
+            backgroundColor: '#1ee0ac'
+        }]
+    },
+    options: miniOpt
+});
+
+
+</script>
+
+{% endblock %}

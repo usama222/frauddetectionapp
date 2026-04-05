@@ -1,0 +1,205 @@
+{% extends "admin/layout.html" %}
+{% block title %}Applications{% endblock %}
+
+{% block content %}
+<div class="nk-content-inner">
+    <div class="nk-content-body">
+
+        <!-- PAGE HEADER -->
+        <div class="nk-block-head nk-block-head-sm">
+            <div class="nk-block-between">
+                <div class="nk-block-head-content">
+                    <h3 class="nk-block-title page-title">Application Lists</h3>
+                    <div class="nk-block-des text-soft">
+                        <p>You have total {{ applications.total }} applications.</p>
+                    </div>
+                </div>
+
+                <div class="nk-block-head-content">
+                    <ul class="nk-block-tools g-3">
+                        <li>
+                            <a href="#" class="btn btn-white btn-outline-light">
+                                <em class="icon ni ni-download-cloud"></em>
+                                <span>Export</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/admin/applications/add" class="btn btn-primary">
+                                <em class="icon ni ni-plus"></em>
+                                <span>Add Application</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD -->
+        <div class="card card-bordered card-stretch">
+            <div class="card-inner-group">
+
+                <!-- SEARCH BAR -->
+                <div class="card-inner">
+                    <form method="get" class="form-inline flex-nowrap gx-3">
+                        <div class="form-wrap">
+                            <input type="text"
+                                   name="search"
+                                   value="{{ search }}"
+                                   class="form-control"
+                                   placeholder="Search application...">
+                        </div>
+                    </form>
+                </div>
+
+                <!-- TABLE -->
+                <div class="card-inner p-0">
+                    <div class="nk-tb-list nk-tb-ulist">
+
+                        <!-- TABLE HEAD -->
+                        <div class="nk-tb-item nk-tb-head">
+                            <div class="nk-tb-col"><span class="sub-text">#</span></div>
+                            <div class="nk-tb-col"><span class="sub-text">Name</span></div>
+                            <div class="nk-tb-col"><span class="sub-text">Category</span></div>
+                            <div class="nk-tb-col"><span class="sub-text">Fraud Status</span></div>
+                            <div class="nk-tb-col"><span class="sub-text">Avg Rating</span></div>
+                            <div class="nk-tb-col"><span class="sub-text">Created</span></div>
+                            <div class="nk-tb-col nk-tb-col-tools text-end"></div>
+                        </div>
+
+                        <!-- ROWS -->
+                        {% for app in applications.items %}
+                        <div class="nk-tb-item">
+                            <div class="nk-tb-col">
+                                <span>
+                                    {{ (applications.page - 1) * applications.per_page + loop.index }}
+                                </span>
+                            </div>
+
+                            <div class="nk-tb-col">
+                                <span class="tb-lead">{{ app.name }}</span>
+                            </div>
+
+                            <div class="nk-tb-col">
+                                <span>{{ app.category.name if app.category else '-' }}</span>
+                            </div>
+
+                            <div class="nk-tb-col">
+                                <span class="tb-status
+                                    {% if app.fraud_status == 'Genuine' %}
+                                        text-success
+                                    {% elif app.fraud_status == 'Suspicious' %}
+                                        text-warning
+                                    {% else %}
+                                        text-danger
+                                    {% endif %}
+                                ">
+                                    {{ app.fraud_status }}
+                                </span>
+                            </div>
+
+                            <div class="nk-tb-col">
+                                <span>{{ app.avg_rating }}</span>
+                            </div>
+
+                            <div class="nk-tb-col">
+                                <span>
+                                    {{ app.created_at.strftime('%Y-%m-%d') if app.created_at else '' }}
+                                </span>
+                            </div>
+
+                            <div class="nk-tb-col nk-tb-col-tools">
+                                <ul class="nk-tb-actions gx-2">
+                                    <li>
+                                        <div class="dropdown">
+                                            <a href="#"
+                                               class="btn btn-sm btn-icon btn-trigger"
+                                               data-bs-toggle="dropdown">
+                                                <em class="icon ni ni-more-h"></em>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <ul class="link-list-opt no-bdr">
+                                                    <li>
+                                                        <a href="#"
+                                                           class="edit-application-btn"
+                                                           data-id="{{ app.id }}"
+                                                           data-bs-toggle="modal"
+                                                           data-bs-target="#editApplicationModal">
+                                                            <em class="icon ni ni-edit"></em>
+                                                            <span>Edit</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/admin/applications/delete/{{ app.id }}"
+                                                           onclick="return confirm('Are you sure?')">
+                                                            <em class="icon ni ni-trash"></em>
+                                                            <span>Delete</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% if applications.total == 0 %}
+                        <div class="nk-tb-item">
+                            <div class="nk-tb-col text-center">
+                                <span>No applications found</span>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <!-- PAGINATION -->
+                <div class="card-inner">
+                    <ul class="pagination justify-content-start">
+
+                        <li class="page-item {% if not applications.has_prev %}disabled{% endif %}">
+                            <a class="page-link"
+                               href="{{ url_for('applications.list_applications',
+                                                page=applications.prev_num,
+                                                search=search) }}">
+                                Prev
+                            </a>
+                        </li>
+
+                        {% for page_num in applications.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                            {% if page_num %}
+                                <li class="page-item {% if page_num == applications.page %}active{% endif %}">
+                                    <a class="page-link"
+                                       href="{{ url_for('applications.list_applications',
+                                                        page=page_num,
+                                                        search=search) }}">
+                                        {{ page_num }}
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">…</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        <li class="page-item {% if not applications.has_next %}disabled{% endif %}">
+                            <a class="page-link"
+                               href="{{ url_for('applications.list_applications',
+                                                page=applications.next_num,
+                                                search=search) }}">
+                                Next
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

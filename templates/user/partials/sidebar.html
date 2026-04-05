@@ -1,0 +1,80 @@
+<div class="nk-sidebar nk-sidebar-fixed is-dark" data-content="sidebarMenu">
+
+    <!-- SIDEBAR HEADER -->
+    <div class="nk-sidebar-element nk-sidebar-head">
+        <div class="nk-menu-trigger">
+            <a href="#" class="nk-nav-toggle nk-quick-nav-icon d-xl-none" data-target="sidebarMenu">
+                <em class="icon ni ni-arrow-left"></em>
+            </a>
+            <a href="#" class="nk-nav-compact nk-quick-nav-icon d-none d-xl-inline-flex" data-target="sidebarMenu">
+                <em class="icon ni ni-menu"></em>
+            </a>
+        </div>
+
+        <div class="nk-sidebar-brand">
+            <a href="{{ url_for('user_panel.dashboard') }}" class="logo-link nk-sidebar-logo">
+                <img class="logo-light logo-img"
+                     src="{{ url_for('static', filename='admin/images/logo.png') }}"
+                     alt="logo">
+                <img class="logo-dark logo-img"
+                     src="{{ url_for('static', filename='admin/images/logo-dark.png') }}"
+                     alt="logo-dark">
+            </a>
+        </div>
+    </div>
+
+    <!-- SIDEBAR BODY -->
+    <div class="nk-sidebar-element nk-sidebar-body">
+        <div class="nk-sidebar-content">
+            <div class="nk-sidebar-menu" data-simplebar>
+                <ul class="nk-menu">
+
+                    <li class="nk-menu-heading">
+                        <h6 class="overline-title text-primary-alt">User Panel</h6>
+                    </li>
+
+                    <!-- Dashboard (blank page) -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('user_panel.dashboard') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-dashboard"></em>
+                            </span>
+                            <span class="nk-menu-text">Dashboard</span>
+                        </a>
+                    </li>
+
+                    <!-- Apps -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('user_panel.apps_list') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-mobile"></em>
+                            </span>
+                            <span class="nk-menu-text">Applications</span>
+                        </a>
+                    </li>
+
+                    <!-- Feedback -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('user_panel.submit_feedback') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-chat"></em>
+                            </span>
+                            <span class="nk-menu-text">Feedback</span>
+                        </a>
+                    </li>
+
+                    <!-- Logout -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('user_auth.logout') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-signout"></em>
+                            </span>
+                            <span class="nk-menu-text">Logout</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,194 @@
+{% extends "admin/layout.html" %}
+{% block title %}Edit Application{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="nk-content-inner">
+        <div class="nk-content-body">
+
+            <!-- PAGE HEADER -->
+            <div class="nk-block-head nk-block-head-sm">
+                <div class="nk-block-between">
+                    <div class="nk-block-head-content">
+                        <h3 class="nk-block-title page-title">Edit Application</h3>
+                        <div class="nk-block-des text-soft">
+                            <p>Update application details.</p>
+                        </div>
+                    </div>
+                    <div class="nk-block-head-content">
+                        <a href="{{ url_for('applications.list_applications') }}"
+                           class="btn btn-light">
+                            <em class="icon ni ni-arrow-left"></em>
+                            <span>Back to List</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM -->
+            <form method="POST"
+                  enctype="multipart/form-data"
+                  class="row g-gs">
+
+                <!-- LEFT COLUMN -->
+                <div class="col-lg-8">
+                    <div class="card card-bordered">
+                        <div class="card-inner">
+
+                            <!-- APPLICATION NAME -->
+                            <div class="form-group">
+                                <label class="form-label">Application Name</label>
+                                <div class="form-control-wrap">
+                                    <input type="text"
+                                           name="name"
+                                           class="form-control"
+                                           value="{{ app.name }}"
+                                           required>
+                                </div>
+                            </div>
+
+                            <!-- DESCRIPTION -->
+                            <div class="form-group mt-4">
+                                <label class="form-label">Description</label>
+                                <div class="form-control-wrap">
+                                    <textarea name="description"
+                                              class="form-control"
+                                              rows="6">{{ app.description }}</textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="col-lg-4">
+                    <div class="card card-bordered">
+                        <div class="card-inner">
+
+                            <!-- CURRENT LOGO -->
+                            <div class="form-group">
+                                <label class="form-label">Current Logo</label>
+                                <div class="text-center mb-3">
+                                    {% if app.logo_path %}
+                                        <img src="{{ url_for('static', filename=app.logo_path) }}"
+                                             alt="Application Logo"
+                                             class="img-fluid"
+                                             style="max-height:120px;">
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='admin/images/placeholder.png') }}"
+                                             alt="No Logo"
+                                             class="img-fluid"
+                                             style="max-height:120px;">
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- REPLACE LOGO -->
+                            <div class="form-group mt-3">
+                                <label class="form-label">Replace Logo</label>
+                                <input type="file"
+                                       name="logo"
+                                       class="form-control"
+                                       accept="image/*"
+                                       onchange="previewLogo(this)">
+                                <img id="logoPreview"
+                                     class="img-fluid mt-3"
+                                     style="max-height:120px; display:none;">
+                            </div>
+
+                            <!-- CATEGORY -->
+                            <div class="form-group mt-4">
+                                <label class="form-label">Category</label>
+                                <div class="form-control-wrap">
+                                    <select name="category_id"
+                                            class="form-control"
+                                            required>
+                                        {% for cat in categories %}
+                                            <option value="{{ cat.id }}"
+                                                {% if cat.id == app.category_id %}selected{% endif %}>
+                                                {{ cat.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- DOWNLOAD LINK -->
+                            <div class="form-group mt-4">
+                                <label class="form-label">Download Link</label>
+                                <div class="form-control-wrap">
+                                    <input type="url"
+                                           name="download_link"
+                                           class="form-control"
+                                           value="{{ app.download_link }}">
+                                </div>
+                            </div>
+
+                            <!-- FRAUD STATUS (EDIT ONLY) -->
+                            <div class="form-group mt-4">
+                                <label class="form-label">Fraud Status</label>
+                                <div class="form-control-wrap">
+                                    <select name="fraud_status"
+                                            class="form-control"
+                                            required>
+                                        <option value="Pending"
+                                            {% if app.fraud_status == 'Pending' %}selected{% endif %}>
+                                            Pending
+                                        </option>
+                                        <option value="Genuine"
+                                            {% if app.fraud_status == 'Genuine' %}selected{% endif %}>
+                                            Genuine
+                                        </option>
+                                        <option value="Suspicious"
+                                            {% if app.fraud_status == 'Suspicious' %}selected{% endif %}>
+                                            Suspicious
+                                        </option>
+                                        <option value="Fraud"
+                                            {% if app.fraud_status == 'Fraud' %}selected{% endif %}>
+                                            Fraud
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- ACTIONS -->
+                            <div class="form-group mt-5 text-end">
+                                <button type="submit"
+                                        class="btn btn-primary">
+                                    <em class="icon ni ni-save"></em>
+                                    <span>Update Application</span>
+                                </button>
+                                <a href="{{ url_for('applications.list_applications') }}"
+                                   class="btn btn-light">
+                                    Cancel
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- LOGO PREVIEW JS -->
+<script>
+function previewLogo(input) {
+    const preview = document.getElementById('logoPreview');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+
+{% endblock %}

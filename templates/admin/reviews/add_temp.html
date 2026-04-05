@@ -1,0 +1,79 @@
+{% extends "admin/layout.html" %}
+{% block title %}Add Test Review{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="nk-content-inner">
+        <div class="nk-content-body">
+
+            <div class="nk-block-head">
+                <h3 class="nk-block-title">Temporary Review Submission</h3>
+                <p class="text-soft">
+                    This screen is for testing sentiment & fraud detection only.
+                </p>
+            </div>
+
+            <div class="card card-bordered">
+                <div class="card-inner">
+
+                    <form method="POST">
+
+                        <!-- APPLICATION -->
+                        <div class="form-group">
+                            <label class="form-label">Application</label>
+                            <select name="app_id" class="form-control" required>
+                                {% for app in applications %}
+                                    <option value="{{ app.id }}">{{ app.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- USER -->
+                        <div class="form-group mt-3">
+                            <label class="form-label">User</label>
+                            <select name="user_id" class="form-control" required>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}">
+                                        {{ user.name }} ({{ user.email }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- RATING -->
+                        <div class="form-group mt-3">
+                            <label class="form-label">Rating (1–5)</label>
+                            <select name="rating" class="form-control">
+                                <option>5</option>
+                                <option>4</option>
+                                <option>3</option>
+                                <option>2</option>
+                                <option>1</option>
+                            </select>
+                        </div>
+
+                        <!-- REVIEW -->
+                        <div class="form-group mt-3">
+                            <label class="form-label">Review Comment</label>
+                            <textarea name="review_text"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Write review here..."
+                                      required></textarea>
+                        </div>
+
+                        <div class="mt-4 text-end">
+                            <button class="btn btn-primary">
+                                Submit Review
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

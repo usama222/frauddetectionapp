@@ -1,0 +1,9 @@
+from extensions import db
+
+class ApplicationStatus(db.Model):
+    __tablename__ = 'application_statuses'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    def __repr__(self):
+        return f"<ApplicationStatus {self.name}>"

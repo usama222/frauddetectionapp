@@ -1,0 +1,61 @@
+{% extends "admin/layout.html" %}
+{% block title %}Duplicate Reviews{% endblock %}
+
+{% block content %}
+<div class="nk-block">
+    <div class="nk-block-head">
+        <div class="nk-block-head-content">
+            <h4 class="nk-block-title">Duplicate Reviews (Same IP)</h4>
+        </div>
+    </div>
+
+    <div class="card card-bordered">
+        <div class="card-inner">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>User</th>
+                    <th>App</th>
+                    <th>IP</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for r in reviews.items %}
+                    <tr>
+                        <td>{{ r.user.name if r.user else '-' }}</td>
+                        <td>{{ r.application.name if r.application else '-' }}</td>
+                        <td>{{ r.ip_address or '-' }}</td>
+                        <td>{{ r.rating }}/5</td>
+                        <td>{{ r.review_text[:60] }}...</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('reviews.delete_review', id=r.id) }}"
+                                  onsubmit="return confirm('Delete this duplicate review?');">
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="text-center text-muted">No duplicate reviews found.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="mt-3 d-flex justify-content-between">
+                {% if reviews.has_prev %}
+                    <a class="btn btn-light" href="{{ url_for('reviews.duplicate_reviews', page=reviews.prev_num) }}">Prev</a>
+                {% else %}
+                    <span></span>
+                {% endif %}
+
+                {% if reviews.has_next %}
+                    <a class="btn btn-light" href="{{ url_for('reviews.duplicate_reviews', page=reviews.next_num) }}">Next</a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "admin/layout.html" %}
+{% block title %}Reviews & Sentiment{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="nk-content-inner">
+        <div class="nk-content-body">
+
+            <!-- HEADER -->
+            <div class="nk-block-head nk-block-head-sm">
+                <div class="nk-block-between">
+                    <div class="nk-block-head-content">
+                        <h3 class="nk-block-title page-title">Reviews & Sentiment Analysis</h3>
+                        <div class="nk-block-des text-soft">
+                            <p>Total {{ reviews.total }} reviews analyzed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD -->
+            <div class="card card-bordered card-stretch">
+                <div class="card-inner-group">
+
+                    <!-- TABLE -->
+                    <div class="card-inner p-0">
+                        <div class="nk-tb-list nk-tb-ulist">
+
+                            <!-- HEAD -->
+                            <div class="nk-tb-item nk-tb-head">
+                                <div class="nk-tb-col"><span>#</span></div>
+                                <div class="nk-tb-col"><span>User</span></div>
+                                <div class="nk-tb-col"><span>Application</span></div>
+                                <div class="nk-tb-col"><span>Review</span></div>
+                                <div class="nk-tb-col"><span>Sentiment</span></div>
+                                <div class="nk-tb-col"><span>Fake Probability</span></div>
+                            </div>
+
+                            <!-- ROWS -->
+                            {% for r in reviews.items %}
+                            <div class="nk-tb-item">
+                                <div class="nk-tb-col">
+                                    {{ (reviews.page - 1) * reviews.per_page + loop.index }}
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    <span class="tb-lead">{{ r.user.name }}</span>
+                                    <span class="sub-text">{{ r.user.email }}</span>
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    {{ r.application.name }}
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    {{ r.review_text[:60] }}{% if r.review_text|length > 60 %}...{% endif %}
+                                </div>
+
+                                <div class="nk-tb-col">
+                                 {% if r.sentiment_result %}
+                                    <span class="badge badge-dim
+                                        {% if 'Positive' in r.sentiment_result.sentiment_label %}
+                                            bg-outline-success
+                                        {% elif 'Negative' in r.sentiment_result.sentiment_label %}
+                                            bg-outline-danger
+                                        {% else %}
+                                            bg-outline-warning
+                                        {% endif %}
+                                    ">
+                                        {{ r.sentiment_result.sentiment_label }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-dim bg-outline-secondary">
+                                        Pending
+                                    </span>
+                                {% endif %}
+
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    {% if r.sentiment_result %}
+                                        {{ r.sentiment_result.fake_probability }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+
+                    <!-- PAGINATION -->
+                    <div class="card-inner">
+                        <ul class="pagination justify-content-start">
+
+                            <li class="page-item {% if not reviews.has_prev %}disabled{% endif %}">
+                                <a class="page-link"
+                                   href="{{ url_for('reviews.list_reviews',
+                                                    page=reviews.prev_num) }}">
+                                    Prev
+                                </a>
+                            </li>
+
+                            {% for page_num in reviews.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                                {% if page_num %}
+                                    <li class="page-item {% if page_num == reviews.page %}active{% endif %}">
+                                        <a class="page-link"
+                                           href="{{ url_for('reviews.list_reviews',
+                                                            page=page_num) }}">
+                                            {{ page_num }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            <li class="page-item {% if not reviews.has_next %}disabled{% endif %}">
+                                <a class="page-link"
+                                   href="{{ url_for('reviews.list_reviews',
+                                                    page=reviews.next_num) }}">
+                                    Next
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

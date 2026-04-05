@@ -1,0 +1,40 @@
+# 🔹 Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 🔹 Virtual environment
+venv/
+.venv/
+env/
+
+# 🔹 IDE files
+.vscode/
+.idea/
+
+# 🔹 Environment variables 
+.env
+
+# 🔹 Database files
+*.sqlite3
+*.db
+
+# 🔹 Logs
+*.log
+
+# 🔹 OS files
+.DS_Store
+Thumbs.db
+
+# 🔹 Pytest / coverage
+.pytest_cache/
+.coverage
+
+# 🔹 Build files
+build/
+dist/
+*.egg-info/
+
+# 🔹 MySQL dump / local DB folder (your case)
+database file mysql/

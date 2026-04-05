@@ -1,0 +1,69 @@
+{% extends "user/layout.html" %}
+{% block title %}Write Feedback{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="nk-content-inner">
+    <div class="nk-content-body">
+
+      <!-- PAGE HEADER -->
+      <div class="nk-block-head nk-block-head-sm">
+        <div class="nk-block-between">
+          <div class="nk-block-head-content">
+            <h3 class="nk-block-title page-title">Write Feedback</h3>
+            <div class="nk-block-des text-soft">
+              <p>Share your feedback about the system with the admin.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD -->
+      <div class="nk-block">
+        <div class="card card-bordered" style="max-width: 640px;">
+          <div class="card-inner">
+
+            {% if success %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ success }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ error }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('user_panel.submit_feedback') }}">
+              <div class="form-group">
+                <label class="form-label" for="message">Your Feedback</label>
+                <div class="form-control-wrap">
+                  <textarea
+                    id="message"
+                    name="message"
+                    class="form-control form-control-lg"
+                    rows="5"
+                    placeholder="Write your feedback here..."
+                    required></textarea>
+                </div>
+              </div>
+
+              <div class="form-group mt-3">
+                <button type="submit" class="btn btn-primary">
+                  <em class="icon ni ni-send"></em>
+                  <span>Submit Feedback</span>
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

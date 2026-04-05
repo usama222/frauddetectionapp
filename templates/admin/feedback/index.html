@@ -1,0 +1,162 @@
+{% extends "admin/layout.html" %}
+{% block title %}System Feedback{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="nk-content-inner">
+        <div class="nk-content-body">
+
+            <!-- HEADER -->
+            <div class="nk-block-head nk-block-head-sm">
+                <div class="nk-block-between">
+                    <div class="nk-block-head-content">
+                        <h3 class="nk-block-title page-title">System Feedback</h3>
+                        <div class="nk-block-des text-soft">
+                            <p>Total {{ feedbacks.total }} feedback messages.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD -->
+            <div class="card card-bordered card-stretch">
+                <div class="card-inner-group">
+
+                    <!-- SEARCH -->
+                    <div class="card-inner">
+                        <form method="get" class="form-inline flex-nowrap gx-3">
+                            <div class="form-wrap">
+                                <input type="text"
+                                       name="search"
+                                       value="{{ search }}"
+                                       class="form-control"
+                                       placeholder="Search by user or message...">
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- TABLE -->
+                    <div class="card-inner p-0">
+                        <div class="nk-tb-list nk-tb-ulist">
+
+                            <!-- HEAD -->
+                            <div class="nk-tb-item nk-tb-head">
+                                <div class="nk-tb-col"><span class="sub-text">#</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">User</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">Message</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">Date</span></div>
+                            </div>
+
+                            <!-- ROWS -->
+                            {% for fb in feedbacks.items %}
+                            <div class="nk-tb-item">
+                                <div class="nk-tb-col">
+                                    {{ (feedbacks.page - 1) * feedbacks.per_page + loop.index }}
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    <span class="tb-lead">{{ fb.user.name }}</span>
+                                    <span class="sub-text">{{ fb.user.email }}</span>
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    <div>
+                                        {{ fb.message[:60] }}{% if fb.message|length > 60 %}...{% endif %}
+                                    </div>
+
+                                    <a href="#"
+                                       class="text-primary small"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#feedbackModal{{ fb.id }}">
+                                        <span>Read More</span>
+                                    </a>
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    {{ fb.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                </div>
+
+<!--                                <div class="nk-tb-col nk-tb-col-tools">-->
+<!--                                    <a href="#"-->
+<!--                                       class="btn btn-sm btn-outline-primary"-->
+<!--                                       data-bs-toggle="modal"-->
+<!--                                       data-bs-target="#feedbackModal{{ fb.id }}">-->
+<!--                                        View-->
+<!--                                    </a>-->
+<!--                                </div>-->
+                            </div>
+
+                            <!-- VIEW MODAL -->
+                            <div class="modal fade" id="feedbackModal{{ fb.id }}">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <h5 class="title">Feedback Message</h5>
+                                            <p class="mt-3">{{ fb.message }}</p>
+                                            <div class="text-end mt-4">
+                                                <button class="btn btn-light"
+                                                        data-bs-dismiss="modal">
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+
+                    <!-- PAGINATION -->
+                    <div class="card-inner">
+                        <ul class="pagination justify-content-start">
+
+                            <li class="page-item {% if not feedbacks.has_prev %}disabled{% endif %}">
+                                <a class="page-link"
+                                   href="{{ url_for('feedback.list_feedback',
+                                                    page=feedbacks.prev_num,
+                                                    search=search) }}">
+                                    Prev
+                                </a>
+                            </li>
+
+                            {% for page_num in feedbacks.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                                {% if page_num %}
+                                    <li class="page-item {% if page_num == feedbacks.page %}active{% endif %}">
+                                        <a class="page-link"
+                                           href="{{ url_for('feedback.list_feedback',
+                                                            page=page_num,
+                                                            search=search) }}">
+                                            {{ page_num }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">…</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            <li class="page-item {% if not feedbacks.has_next %}disabled{% endif %}">
+                                <a class="page-link"
+                                   href="{{ url_for('feedback.list_feedback',
+                                                    page=feedbacks.next_num,
+                                                    search=search) }}">
+                                    Next
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

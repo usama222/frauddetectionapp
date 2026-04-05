@@ -1,0 +1,137 @@
+<div class="nk-sidebar nk-sidebar-fixed is-dark" data-content="sidebarMenu">
+
+    <!-- SIDEBAR HEADER -->
+    <div class="nk-sidebar-element nk-sidebar-head">
+        <div class="nk-menu-trigger">
+            <a href="#" class="nk-nav-toggle nk-quick-nav-icon d-xl-none" data-target="sidebarMenu">
+                <em class="icon ni ni-arrow-left"></em>
+            </a>
+            <a href="#" class="nk-nav-compact nk-quick-nav-icon d-none d-xl-inline-flex" data-target="sidebarMenu">
+                <em class="icon ni ni-menu"></em>
+            </a>
+        </div>
+
+        <div class="nk-sidebar-brand">
+            <a href="{{ url_for('auth.admin_dashboard') }}" class="logo-link nk-sidebar-logo">
+               <img class="logo-light logo-img"
+                     src="{{ url_for('static', filename='admin/images/logo.png') }}">
+
+                <img class="logo-dark logo-img"
+                     src="{{ url_for('static', filename='admin/images/logo-dark.png') }}">
+            </a>
+        </div>
+    </div>
+
+    <!-- SIDEBAR BODY -->
+    <div class="nk-sidebar-element nk-sidebar-body">
+        <div class="nk-sidebar-content">
+            <div class="nk-sidebar-menu" data-simplebar>
+                <ul class="nk-menu">
+
+                    <li class="nk-menu-heading">
+                        <h6 class="overline-title text-primary-alt">Admin Panel</h6>
+                    </li>
+
+                    <!-- Dashboard -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('auth.admin_dashboard') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-dashboard"></em>
+                            </span>
+                            <span class="nk-menu-text">Dashboard</span>
+                        </a>
+                    </li>
+
+                        <!-- Dashboard -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('fraud_dashboard.dashboard') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-dashboard"></em>
+                            </span>
+                            <span class="nk-menu-text">Fraud Detection</span>
+                        </a>
+                    </li>
+
+                    <!-- Categories -->
+                    <li class="nk-menu-item">
+                        <a href="{{url_for('categories.list_categories')}}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-mobile"></em>
+                            </span>
+                            <span class="nk-menu-text">Categories</span>
+                        </a>
+                    </li>
+
+                    <!-- Applications -->
+                    <li class="nk-menu-item">
+                        <a href="{{url_for('applications.list_applications')}}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-mobile"></em>
+                            </span>
+                            <span class="nk-menu-text">Applications</span>
+                        </a>
+                    </li>
+
+                    <!-- Users -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('users.list_users') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-users"></em>
+                            </span>
+                            <span class="nk-menu-text">Users</span>
+                        </a>
+                    </li>
+
+                    <!-- Feedback -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('feedback.list_feedback') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-comments"></em>
+                            </span>
+                            <span class="nk-menu-text">System Feedback</span>
+                        </a>
+                    </li>
+
+                      <!-- Reviews -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('reviews.list_reviews') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-comments"></em>
+                            </span>
+                            <span class="nk-menu-text">Reviews</span>
+                        </a>
+                    </li>
+
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('reviews.duplicate_reviews') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-comments"></em>
+                            </span>
+                            <span class="nk-menu-text">Duplicate Reviews</span>
+                        </a>
+                    </li>
+
+<!--                    <li class="nk-menu-item">-->
+<!--                        <a href="{{ url_for('admin_reviews.add_review') }}" class="nk-menu-link">-->
+<!--                            <span class="nk-menu-icon">-->
+<!--                                <em class="icon ni ni-comments"></em>-->
+<!--                            </span>-->
+<!--                            <span class="nk-menu-text">Temp Reviews</span>-->
+<!--                        </a>-->
+<!--                    </li>-->
+
+                    <!-- Logout -->
+                    <li class="nk-menu-item">
+                        <a href="{{ url_for('auth.admin_logout') }}" class="nk-menu-link">
+                            <span class="nk-menu-icon">
+                                <em class="icon ni ni-signout"></em>
+                            </span>
+                            <span class="nk-menu-text">Logout</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

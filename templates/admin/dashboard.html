@@ -1,0 +1,505 @@
+{% extends "admin/layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="nk-content-head mb-4">
+        <h3 class="nk-block-title page-title">System Dashboard</h3>
+        <p class="text-soft">Overall system monitoring & activity</p>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-3">
+            <div class="card card-bordered">
+                <div class="card-inner text-center">
+                    <em class="icon ni ni-users text-primary fs-28"></em>
+                    <h6>Total Users</h6>
+                    <h3>{{ total_users }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card card-bordered">
+                <div class="card-inner text-center">
+                    <em class="icon ni ni-grid text-info fs-28"></em>
+                    <h6>Total Applications</h6>
+                    <h3>{{ total_apps }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card card-bordered">
+                <div class="card-inner text-center">
+                    <em class="icon ni ni-comments text-success fs-28"></em>
+                    <h6>Total Reviews</h6>
+                    <h3>{{ total_reviews }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card card-bordered">
+                <div class="card-inner text-center">
+                    <em class="icon ni ni-shield-alert text-danger fs-28"></em>
+                    <h6>Fake Reviews</h6>
+                    <h3>{{ fake_reviews }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- FRAUD STATUS OVERVIEW -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="card card-bordered text-center">
+                <div class="card-inner">
+                    <h6>Fraud Apps</h6>
+                    <h2 class="text-danger">{{ fraud_apps }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-bordered text-center">
+                <div class="card-inner">
+                    <h6>Suspicious Apps</h6>
+                    <h2 class="text-warning">{{ suspicious_apps }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-bordered text-center">
+                <div class="card-inner">
+                    <h6>Genuine Apps</h6>
+                    <h2 class="text-success">{{ genuine_apps }}</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+        <!--Latest Feedback-->
+     <div class="row g-4 mb-4">
+         <div class="card card-bordered mb-4" >
+             <div class="card-inner">
+                            <h5 class="title mb-3">Latest Feedbacks</h5>
+
+                            <div class="nk-tb-list nk-tb-ulist">
+                                <div class="nk-tb-item nk-tb-head">
+                                    <div class="nk-tb-col">User</div>
+                                    <div class="nk-tb-col">Message</div>
+                                    <div class="nk-tb-col">Date</div>
+                                </div>
+
+                                {% for r in latest_feedbacks %}
+                                <div class="nk-tb-item">
+                                    <div class="nk-tb-col">
+                                      <span class="tb-lead">{{ r.user.name }}</span>
+                                      <span class="sub-text">{{ r.user.email }}</span>
+                                    </div>
+
+
+                                     <div class="nk-tb-col">
+                                            <div>
+                                                {{ r.message[:60] }}{% if r.message|length > 60 %}...{% endif %}
+                                            </div>
+                                            {% if r.message|length > 60 %}
+                                                   <a href="#"
+                                                       class="text-primary small"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#FeedbackModal"
+                                                       data-message="{{ r.message | e }}">
+                                                        <span>Read More</span>
+                                                   </a>
+                                            {% endif %}
+                                     </div>
+                                    <div class="nk-tb-col">
+                                        {{ r.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+         </div>
+     </div>
+
+
+    <div class="row g-4 mb-4">
+         <!-- LATEST REVIEWS -->
+        <div class="col-md-8">
+             <div class="card card-bordered mb-4" style="height: 100%">
+                <div class="card-inner">
+                    <h5 class="title mb-3">Latest Reviews</h5>
+
+                    <div class="nk-tb-list nk-tb-ulist">
+                        <div class="nk-tb-item nk-tb-head">
+                            <div class="nk-tb-col">Application</div>
+                            <div class="nk-tb-col">User</div>
+                            <div class="nk-tb-col">Review</div>
+                            <div class="nk-tb-col">Rating</div>
+                            <div class="nk-tb-col">Fake?</div>
+                        </div>
+
+                        {% for r in latest_reviews %}
+                        <div class="nk-tb-item">
+                            <div class="nk-tb-col">
+                                {{ r.app_name }}
+                            </div>
+
+                            <div class="nk-tb-col">
+                              <span class="tb-lead">{{ r.app_name }}</span>
+                              <span class="sub-text">{{ r.user_name }}</span>
+                            </div>
+
+                             <div class="nk-tb-col">
+                                    <div>
+                                        {{ r.review_text[:60] }}{% if r.review_text|length > 60 %}...{% endif %}
+                                    </div>
+                                    {% if r.review_text|length > 60 %}
+                                           <a href="#"
+                                               class="text-primary small"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#reviewModal"
+                                               data-message="{{ r.review_text | e }}">
+                                                <span>Read More</span>
+                                           </a>
+                                    {% endif %}
+                             </div>
+
+                           <div class="nk-tb-col">
+                                    {% for i in range(1, 6) %}
+                                        {% if i <= r.rating %}
+                                            <em class="icon ni ni-star-fill text-warning"></em>
+                                        {% else %}
+                                            <em class="icon ni ni-star text-soft"></em>
+                                        {% endif %}
+                                    {% endfor %}
+                            </div>
+
+                            <div class="nk-tb-col">
+                                {% if r.is_fake %}
+                                    <span class="badge bg-danger">Yes</span>
+                                {% else %}
+                                    <span class="badge bg-success">No</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <!-- REVIEW ACTIVITY TREND -->
+       <div class="col-md-4">
+            <div class="card card-bordered" style="height: 100%">
+                <div class="card-inner">
+                    <h6 class="title mb-3">System Review Activity</h6>
+                    <div style="height:340px;">
+                        <canvas id="reviewActivityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- USER & SYSTEM ACTIVITY GRAPHS -->
+    <div class="row g-4 mb-4">
+        <!-- USER REGISTRATION TREND -->
+          <div class="col-md-6">
+                 <div class="card card-bordered mb-4">
+                    <div class="card-inner">
+                        <h6 class="title mb-3">User Registration Trend</h6>
+                        <div style="height: 320px;">
+                            <canvas id="userRegistrationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+          </div>
+
+        <!--LATEST Users-->
+        <div class="col-md-6">
+            <div class="card card-bordered mb-4" style="height: 94%">
+                <div class="card-inner">
+                    <h5 class="title mb-3">Latest Registered Users</h5>
+
+                    <div class="nk-tb-list nk-tb-ulist">
+                        <div class="nk-tb-item nk-tb-head">
+                            <div class="nk-tb-col">Name</div>
+                            <div class="nk-tb-col">Email</div>
+                            <div class="nk-tb-col">Joined</div>
+                        </div>
+
+                        {% for u in latest_users %}
+                        <div class="nk-tb-item">
+                            <div class="nk-tb-col">{{ u.name }}</div>
+                            <div class="nk-tb-col">{{ u.email }}</div>
+                            <div class="nk-tb-col">
+                                {{ u.created_at.strftime('%d %b %Y') if u.created_at else '—' }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- RECENT FRAUD ANALYSIS -->
+<!--    <div class="card card-bordered">-->
+<!--        <div class="card-inner">-->
+<!--            <h5 class="title mb-3">Recently Analyzed Applications</h5>-->
+
+<!--            <div class="nk-tb-list nk-tb-ulist">-->
+<!--                <div class="nk-tb-item nk-tb-head">-->
+<!--                    <div class="nk-tb-col">Application</div>-->
+<!--                    <div class="nk-tb-col">Fraud %</div>-->
+<!--                    <div class="nk-tb-col">Status</div>-->
+<!--                    <div class="nk-tb-col">Action</div>-->
+<!--                </div>-->
+
+<!--                {% for log, app in recent_apps %}-->
+<!--                <div class="nk-tb-item">-->
+<!--                    <div class="nk-tb-col">{{ app.name }}</div>-->
+
+<!--                    <div class="nk-tb-col">-->
+<!--                        {{ (log.fraud_probability * 100) | round(1) }}%-->
+<!--                    </div>-->
+
+<!--                    <div class="nk-tb-col">-->
+<!--                        <span class="badge badge-dim-->
+<!--                            {% if log.suggested_status == 'Fraud' %} bg-danger-->
+<!--                            {% elif log.suggested_status == 'Suspicious' %} bg-warning-->
+<!--                            {% else %} bg-success {% endif %}">-->
+<!--                            {{ log.suggested_status }}-->
+<!--                        </span>-->
+<!--                    </div>-->
+
+<!--                    <div class="nk-tb-col">-->
+<!--                        <a href="{{ url_for('fraud_dashboard.application_detail', app_id=app.id) }}"-->
+<!--                           class="btn btn-sm btn-outline-primary">-->
+<!--                            View-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+
+<!--        </div>-->
+<!--    </div>-->
+
+<!--review modal-->
+    <div class="modal fade" id="reviewModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Review Message</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p id="reviewModalContent"
+                       style="white-space: pre-wrap;"></p>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="FeedbackModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Message</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p id="FeedbackModalContent"
+                       style="white-space: pre-wrap;"></p>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+const reviewModal = document.getElementById('reviewModal');
+reviewModal.addEventListener('show.bs.modal', function (event) {
+    const trigger = event.relatedTarget;
+    const message = trigger.getAttribute('data-message');
+
+    const modalBody = reviewModal.querySelector('#reviewModalContent');
+    modalBody.textContent = message;
+});
+
+const FeedbackModal = document.getElementById('FeedbackModal');
+FeedbackModal.addEventListener('show.bs.modal', function (event) {
+    const trigger = event.relatedTarget;
+    const message = trigger.getAttribute('data-message');
+
+    const modalBody = FeedbackModal.querySelector('#FeedbackModalContent');
+    modalBody.textContent = message;
+});
+
+/* USER REGISTRATION */
+const ctx = document.getElementById("userRegistrationChart");
+
+new Chart(ctx, {
+    data: {
+        labels: {{ user_month_labels | tojson }},
+        datasets: [
+            {
+                type: "bar",
+                label: "New Users",
+                data: {{ monthly_users | tojson }},
+                backgroundColor: "#6576ff",
+                borderRadius: 8,
+
+                barThickness: 50,
+                maxBarThickness: 60,
+                categoryPercentage: 0.8,
+                barPercentage: 0.9,
+
+                yAxisID: "y"
+            },
+            {
+                type: "line",
+                label: "Total Users",
+                data: {{ cumulative_users | tojson }},
+                borderColor: "#f7931a",
+                backgroundColor: "transparent",
+                tension: 0.4,
+                pointRadius: 5,
+                pointHoverRadius: 6,
+                yAxisID: "y1"
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: "bottom"
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: "New Users"
+                },
+                ticks: { precision: 0 }
+            },
+            y1: {
+                beginAtZero: true,
+                position: "right",
+                grid: {
+                    drawOnChartArea: false
+                },
+                title: {
+                    display: true,
+                    text: "Total Users"
+                },
+                ticks: { precision: 0 }
+            }
+        }
+    }
+});
+
+/* REVIEW ACTIVITY */
+const ctx1 = document.getElementById("reviewActivityChart");
+
+new Chart(ctx1, {
+    type: "bar",
+    data: {
+        labels: {{ review_labels | tojson }},
+        datasets: [
+            {
+                label: "Fake Reviews",
+                data: {{ fake_review_data | tojson }},
+                backgroundColor: "#e85347",
+
+                barThickness: 28,
+                maxBarThickness: 32
+            },
+            {
+                label: "Genuine Reviews",
+                data: {{ genuine_review_data | tojson }},
+                backgroundColor: "#1ee0ac",
+
+                barThickness: 28,
+                maxBarThickness: 32
+            }
+        ]
+    },
+    options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: "bottom"
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return Math.abs(ctx.raw) + " reviews";
+                    }
+                }
+            }
+        },
+        scales: {
+           x: {
+                stacked: true,
+                min: -5,
+                max: 5,
+                ticks: {
+                    stepSize: 1,
+                    callback: (v) => Math.abs(v)
+                },
+                title: {
+                    display: true,
+                    text: "Number of Reviews"
+                }
+            },
+            y: {
+                stacked: true,
+                categoryPercentage: 0.6,
+                barPercentage: 0.8
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

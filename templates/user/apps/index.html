@@ -1,0 +1,217 @@
+{% extends "user/layout.html" %}
+{% block title %}Applications{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="nk-content-inner">
+    <div class="nk-content-body">
+
+      <!-- PAGE HEADER -->
+      <div class="nk-block-head nk-block-head-sm">
+        <div class="nk-block-between">
+          <div class="nk-block-head-content">
+            <h3 class="nk-block-title page-title">Application Lists</h3>
+            <div class="nk-block-des text-soft">
+              <p>You have total {{ applications.total }} applications.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD -->
+      <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+
+          <!-- SEARCH + FILTER BAR -->
+          <div class="card-inner">
+            <div class="card-title-group">
+              <div class="card-tools">
+                <form method="get" class="form-inline flex-nowrap gx-3">
+
+                  <div class="form-wrap me-2">
+                    <input type="text"
+                           name="search"
+                           value="{{ search }}"
+                           class="form-control"
+                           placeholder="Search application...">
+                  </div>
+
+                  <div class="form-wrap me-2">
+                    <select name="category_id" class="form-select">
+                      <option value="">All Categories</option>
+                      {% for c in categories %}
+                        <option value="{{ c.id }}" {% if category_id|int == c.id %}selected{% endif %}>
+                          {{ c.name }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="form-wrap">
+                    <button class="btn btn-primary">
+                      <em class="icon ni ni-search"></em><span>Search</span>
+                    </button>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <div class="card-inner p-0">
+            <div class="nk-tb-list nk-tb-ulist">
+
+              <!-- TABLE HEAD -->
+              <div class="nk-tb-item nk-tb-head">
+                <div class="nk-tb-col"><span class="sub-text">#</span></div>
+                <div class="nk-tb-col tb-col-sm"><span class="sub-text">Logo</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Application Name</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Category</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Fraud Status</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Avg Rating</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Created</span></div>
+                <div class="nk-tb-col nk-tb-col-tools text-end">Action</div>
+              </div>
+
+              <!-- ROWS -->
+              {% for app in applications.items %}
+              <div class="nk-tb-item">
+
+                <div class="nk-tb-col">
+                  <span>{{ (applications.page - 1) * applications.per_page + loop.index }}</span>
+                </div>
+
+                <div class="nk-tb-col tb-col-sm">
+                  {% if app.logo_path %}
+                    <img src="{{ url_for('static', filename=app.logo_path) }}"
+                         alt="{{ app.name }}"
+                         class="rounded"
+                         style="width:36px;height:36px;object-fit:cover;">
+                  {% else %}
+                    <div class="text-soft small">No Logo</div>
+                  {% endif %}
+                </div>
+
+                <div class="nk-tb-col">
+                  <span class="tb-lead">{{ app.name }}</span>
+                </div>
+
+                <div class="nk-tb-col">
+                  <span>{{ app.category.name if app.category else '-' }}</span>
+                </div>
+
+                <div class="nk-tb-col">
+                  {% set st = (app.fraud_status or 'Pending') %}
+                  <span class="tb-status
+                    {% if st == 'Genuine' %}text-success
+                    {% elif st == 'Suspicious' %}text-warning
+                    {% elif st == 'Fraud' %}text-danger
+                    {% else %}text-secondary
+                    {% endif %}">
+                    {{ st }}
+                  </span>
+                </div>
+
+                <div class="nk-tb-col">
+                  {% set rating = (app.avg_rating or 0) | float %}
+<!--                  <span class="tb-sub me-2">{{ "%.1f"|format(rating) }}</span>-->
+                  <span class="rating-stars">
+                    {% for i in range(1,6) %}
+                      {% if i <= rating|round(0,'floor') %}
+                        <em class="icon ni ni-star-fill text-warning"></em>
+                      {% else %}
+                        <em class="icon ni ni-star"></em>
+                      {% endif %}
+                    {% endfor %}
+                  </span>
+                </div>
+
+                <div class="nk-tb-col">
+                  <span>{{ app.created_at.strftime('%Y-%m-%d') if app.created_at else '' }}</span>
+                </div>
+
+                <div class="nk-tb-col nk-tb-col-tools">
+                  <ul class="nk-tb-actions gx-2">
+                    <li>
+                      <div class="dropdown">
+                        <a href="#" class="btn btn-sm btn-icon btn-trigger" data-bs-toggle="dropdown">
+                          <em class="icon ni ni-more-h"></em>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                          <ul class="link-list-opt no-bdr">
+                            <li>
+                              <a href="{{ url_for('user_panel.app_detail', app_id=app.id) }}">
+                                <em class="icon ni ni-eye"></em>
+                                <span>View Details</span>
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
+              </div>
+              {% else %}
+              <div class="p-4 text-center text-soft">
+                No applications found.
+              </div>
+              {% endfor %}
+
+            </div>
+          </div>
+
+          <!-- PAGINATION -->
+          <div class="card-inner">
+            <ul class="pagination justify-content-start">
+
+              <li class="page-item {% if not applications.has_prev %}disabled{% endif %}">
+                <a class="page-link"
+                   href="{{ url_for('user_panel.apps_list',
+                                    page=applications.prev_num,
+                                    search=search,
+                                    category_id=category_id) }}">
+                  Prev
+                </a>
+              </li>
+
+              {% for page_num in applications.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                  <li class="page-item {% if page_num == applications.page %}active{% endif %}">
+                    <a class="page-link"
+                       href="{{ url_for('user_panel.apps_list',
+                                        page=page_num,
+                                        search=search,
+                                        category_id=category_id) }}">
+                      {{ page_num }}
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <span class="page-link">…</span>
+                  </li>
+                {% endif %}
+              {% endfor %}
+
+              <li class="page-item {% if not applications.has_next %}disabled{% endif %}">
+                <a class="page-link"
+                   href="{{ url_for('user_panel.apps_list',
+                                    page=applications.next_num,
+                                    search=search,
+                                    category_id=category_id) }}">
+                  Next
+                </a>
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

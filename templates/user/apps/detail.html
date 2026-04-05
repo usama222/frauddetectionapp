@@ -1,0 +1,110 @@
+{% extends "user/layout.html" %}
+{% block title %}App Detail{% endblock %}
+
+{% block content %}
+<div class="nk-block">
+    <div class="nk-block-head">
+        <div class="nk-block-head-content">
+            <h4 class="nk-block-title">{{ app.name }}</h4>
+            <p class="text-muted">Post a review (Prototype requirement)</p>
+        </div>
+    </div>
+
+    <div class="card card-bordered mb-3">
+        <div class="card-inner">
+            <form method="POST" action="{{ url_for('user_panel.post_review', app_id=app.id) }}">
+                <div class="form-group">
+                    <label class="form-label">Rating</label>
+                    <input type="hidden" name="rating" id="ratingInput" value="" required>
+                    <div class="d-flex align-items-center gap-1" id="ratingStars" style="font-size: 22px; cursor: pointer;">
+                        {% for i in range(1,6) %}
+                            <em class="icon ni ni-star text-warning" data-value="{{ i }}" aria-label="{{ i }}"></em>
+                        {% endfor %}
+                        <span class="text-soft ms-2" id="ratingText">Select rating</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Review</label>
+                    <textarea name="review_text" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <button class="btn btn-primary mt-2">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card card-bordered">
+        <div class="card-inner">
+            <h6 class="mb-3">Recent Reviews</h6>
+
+            {% for r in reviews %}
+                <div class="border-bottom py-2">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ r.user.name if r.user else 'User' }}</strong>
+                       {% set rr = (r.rating or 0) | int %}
+                        <span class="d-inline-flex align-items-center">
+                          <span class="rating-stars me-2">
+                            {% for i in range(1,6) %}
+                              {% if i <= rr %}
+                                <em class="icon ni ni-star-fill text-warning"></em>
+                              {% else %}
+                                <em class="icon ni ni-star"></em>
+                              {% endif %}
+                            {% endfor %}
+                          </span>
+                          <span class="text-soft small">{{ rr }}/5</span>
+                        </span>
+                    </div>
+
+                    <div class="text-muted small">
+                        {% if r.is_duplicate %} <span class="badge bg-warning">Duplicate (IP)</span> {% endif %}
+                        {% if r.is_fake %} <span class="badge bg-danger">Fake</span> {% endif %}
+                    </div>
+
+                    <p class="mt-1">{{ r.review_text }}</p>
+                </div>
+            {% else %}
+                <p class="text-muted">No reviews yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const starsWrap = document.getElementById('ratingStars');
+  if (!starsWrap) return;
+
+  const stars = starsWrap.querySelectorAll('em[data-value]');
+  const input = document.getElementById('ratingInput');
+  const text = document.getElementById('ratingText');
+
+  function paint(selected) {
+    stars.forEach(star => {
+      const val = parseInt(star.getAttribute('data-value'));
+      star.classList.remove('ni-star', 'ni-star-fill');
+      star.classList.add(val <= selected ? 'ni-star-fill' : 'ni-star');
+    });
+    if (selected > 0) {
+      text.textContent = selected + '/5';
+      input.value = selected;
+    } else {
+      text.textContent = 'Select rating';
+      input.value = '';
+    }
+  }
+
+  stars.forEach(star => {
+    star.addEventListener('mouseenter', () => paint(parseInt(star.dataset.value)));
+    star.addEventListener('click', () => paint(parseInt(star.dataset.value)));
+  });
+
+  starsWrap.addEventListener('mouseleave', () => {
+    paint(parseInt(input.value || 0));
+  });
+
+  // initial
+  paint(0);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,390 @@
+{% extends "admin/layout.html" %}
+{% block title %}Fraud Analysis | {{ application.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="nk-content-head mb-4">
+        <div class="nk-block-between">
+            <div>
+                <h3 class="nk-block-title page-title">
+                    Fraud Analysis — {{ application.name }}
+                </h3>
+                <p class="text-soft">Application-level fraud & sentiment analysis</p>
+            </div>
+            <a href="{{ url_for('fraud_dashboard.dashboard') }}" class="btn btn-light">
+                <em class="icon ni ni-arrow-left"></em> Back
+            </a>
+        </div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+   <div class="row g-4 mb-4">
+
+    <!-- TOTAL REVIEWS -->
+    <div class="col-md-3">
+        <div class="card card-bordered card-full">
+            <div class="card-inner text-center">
+                <em class="icon ni ni-list text-primary fs-24 mb-1"></em>
+                <h6 class="title">Total Reviews</h6>
+                <h3 class="text-primary">{{ fraud_log.total_reviews }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAKE REVIEWS -->
+    <div class="col-md-3">
+        <div class="card card-bordered card-full">
+            <div class="card-inner text-center">
+                <em class="icon ni ni-alert-circle text-danger fs-24 mb-1"></em>
+                <h6 class="title">Fake Reviews</h6>
+                <h3 class="text-danger">{{ fraud_log.fake_reviews }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- POSITIVE + NEGATIVE (COMBINED) -->
+    <div class="col-md-3">
+        <div class="card card-bordered card-full">
+            <div class="card-inner text-center">
+                <em class="icon ni ni-thumbs-up text-success fs-24 mb-1"></em>
+                <h6 class="title">Sentiment Overview</h6>
+
+                <div class="d-flex justify-content-center gap-4 mt-2">
+                    <div>
+                        <small class="text-soft">Positive</small>
+                        <h4 class="text-success mb-0">
+                            {{ fraud_log.positive_reviews }}
+                        </h4>
+                    </div>
+
+                    <div>
+                        <small class="text-soft">Negative</small>
+                        <h4 class="text-danger mb-0">
+                            {{ fraud_log.negative_reviews }}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEUTRAL -->
+    <div class="col-md-3">
+        <div class="card card-bordered card-full">
+            <div class="card-inner text-center">
+                <em class="icon ni ni-meh text-warning fs-24 mb-1"></em>
+                <h6 class="title">Neutral</h6>
+                <h3 class="text-warning">{{ fraud_log.neutral_reviews }}</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+    <!-- STATUS -->
+    <div class="card card-bordered mb-4">
+        <div class="card-inner">
+            <div class="row align-items-center">
+
+                <div class="col-md-4">
+                    <strong>Suggested Status</strong><br>
+                    <span class="badge badge-dim
+                        {% if fraud_log.suggested_status == 'Fraud' %} bg-danger
+                        {% elif fraud_log.suggested_status == 'Suspicious' %} bg-warning
+                        {% else %} bg-success {% endif %}">
+                        {{ fraud_log.suggested_status }}
+                    </span>
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Current Status</strong><br>
+                    <span class="badge badge-dim
+                        {% if application.fraud_status == 'Fraud' %} bg-danger
+                        {% elif application.fraud_status == 'Suspicious' %} bg-warning
+                        {% else %} bg-success {% endif %}">
+                        {{ application.fraud_status }}
+                    </span>
+                </div>
+
+                <div class="col-md-4 text-end">
+                    <a href="{{ url_for('fraud_action.approve_suggested', app_id=application.id) }}"
+                       class="btn btn-success">
+                        Approve Suggested
+                    </a>
+
+                    <!-- OVERRIDE DROPDOWN -->
+                     <div class="dropdown d-inline-block ms-2">
+                        <a href="#"
+                           class="btn btn-outline-secondary dropdown-toggle"
+                           data-bs-toggle="dropdown">
+                            Override
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <form method="POST"
+                                  action="{{ url_for('fraud_action.override_status', app_id=application.id) }}">
+
+                                <button class="dropdown-item" name="fraud_status" value="Genuine">
+                                    Mark Genuine
+                                </button>
+
+                                <button class="dropdown-item" name="fraud_status" value="Suspicious">
+                                    Mark Suspicious
+                                </button>
+
+                                <button class="dropdown-item" name="fraud_status" value="Fraud">
+                                    Mark Fraud
+                                </button>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- CHART SECTION -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <!-- FAKE vs GENUINE POSITIVE CHART -->
+            <div class="card card-bordered mb-4">
+                <div class="card-inner">
+                    <h6 class="title mb-3">Positive Reviews Authenticity</h6>
+                    <div style="max-width: 360px; margin:auto;">
+                        <canvas id="positiveBreakdownChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+                <div class="card card-bordered" style="height: 95%">
+                    <div class="card-inner">
+                        <h6 class="title mb-3">Genuine vs Fake Sentiment Distribution</h6>
+                        <div  style="max-width: 420px;height: 300px; margin:auto;">
+                            <canvas id="genuineSentimentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <div class="card card-bordered mb-4">
+        <div class="card-inner text-center">
+            <em class="icon ni ni-alert-circle text-danger fs-28"></em>
+            <h5 class="mt-2">Fake Reviews Impact</h5>
+
+            <p class="text-soft mb-1">
+                {{ fake_percentage }}% of total reviews are detected as fake
+            </p>
+
+            {% if fake_percentage >= 40 %}
+                <span class="badge bg-danger">High Risk of Manipulation</span>
+            {% elif fake_percentage >= 20 %}
+                <span class="badge bg-warning">Moderate Risk</span>
+            {% else %}
+                <span class="badge bg-success">Low Risk</span>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+<!--    <div class="card card-bordered mb-4">-->
+<!--    <div class="card-inner">-->
+<!--        <h6 class="title mb-2">Sentiment–Rating Consistency</h6>-->
+
+<!--        <p class="text-soft mb-2">-->
+<!--            Reviews where sentiment does not match user rating.-->
+<!--        </p>-->
+
+<!--        <h3 class="text-warning">-->
+<!--            {{ inconsistent_reviews }}-->
+<!--        </h3>-->
+
+<!--        <small class="text-soft">-->
+<!--            (Positive sentiment with low rating OR negative sentiment with high rating)-->
+<!--        </small>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+    <!-- REVIEWS TABLE -->
+    <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+
+            <div class="card-inner">
+                <h5 class="title">Reviews & Sentiment Analysis</h5>
+            </div>
+
+            <div class="card-inner p-0">
+                <div class="nk-tb-list nk-tb-ulist">
+
+                    <div class="nk-tb-item nk-tb-head">
+                        <div class="nk-tb-col">#</div>
+                        <div class="nk-tb-col">User</div>
+                        <div class="nk-tb-col">Review</div>
+                        <div class="nk-tb-col">Sentiment</div>
+                        <div class="nk-tb-col">Fake Prob.</div>
+                        <div class="nk-tb-col">Fake?</div>
+                    </div>
+
+                    {% for r in reviews %}
+                    <div class="nk-tb-item">
+
+                        <div class="nk-tb-col">{{ loop.index }}</div>
+
+                        <div class="nk-tb-col">
+                            <strong>{{ r.user.name }}</strong><br>
+                            <small class="text-soft">{{ r.user.email }}</small>
+                        </div>
+
+                        <div class="nk-tb-col">{{ r.review_text }}</div>
+
+                        <div class="nk-tb-col">
+                            {% if r.sentiment_result %}
+                                <span class="badge badge-dim
+                                    {% if r.sentiment_result.sentiment_label == 'Positive' %} bg-success
+                                    {% elif r.sentiment_result.sentiment_label == 'Negative' %} bg-danger
+                                    {% else %} bg-warning {% endif %}">
+                                    {{ r.sentiment_result.sentiment_label }}
+                                </span>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </div>
+
+                        <div class="nk-tb-col">
+                            {{ r.sentiment_result.fake_probability if r.sentiment_result else '—' }}
+                        </div>
+
+                        <div class="nk-tb-col">
+                            {% if r.is_fake %}
+                                <span class="badge badge-dim bg-danger">Yes</span>
+                            {% else %}
+                                <span class="badge badge-dim bg-success">No</span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const chartData = {
+        genuine_positive: {{ genuine_positive | default(0) | int }},
+        fake_positive: {{ fake_positive | default(0) | int }},
+        genuine_negative: {{ genuine_negative | default(0) | int }},
+        genuine_neutral: {{ genuine_neutral | default(0) | int }}
+    };
+
+    console.log("Chart Data:", chartData); // 🔍 DEBUG
+
+    // ========= Positive Authenticity =========
+    const posCanvas = document.getElementById("positiveBreakdownChart");
+    if (posCanvas) {
+        new Chart(posCanvas, {
+            type: "pie",
+            data: {
+                labels: ["Genuine Positive", "Fake Positive"],
+                datasets: [{
+                    data: [
+                        chartData.genuine_positive,
+                        chartData.fake_positive
+                    ],
+                    backgroundColor: ["#1ee0ac", "#e85347"]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: "bottom" }
+                }
+            }
+        });
+    }
+
+    // ========= Genuine Sentiment (BAR CHART) =========
+// ========= Genuine vs Fake Sentiment (STACKED BAR) =========
+const genCanvas = document.getElementById("genuineSentimentChart");
+
+if (genCanvas) {
+    new Chart(genCanvas, {
+        type: "bar",
+        data: {
+            labels: ["Positive", "Negative", "Neutral"],
+            datasets: [
+                  {
+                    label: "Fake",
+                    data: [
+                        chartData.fake_positive,
+                        chartData.fake_negative ?? 0,
+                        chartData.fake_neutral ?? 0
+                    ],
+                    backgroundColor: "#ffd650",
+                       borderRadius: 6,
+                    barThickness: 60
+                },
+                {
+                    label: "Genuine",
+                    data: [
+                        chartData.genuine_positive,
+                        chartData.genuine_negative,
+                        chartData.genuine_neutral
+                    ],
+                    backgroundColor: "#556cff",
+                     borderRadius: 6,
+                    barThickness: 60
+                },
+
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: "bottom"
+                },
+                tooltip: {
+                    enabled: true
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: { display: false }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+});
+</script>
+
+{% endblock %}
