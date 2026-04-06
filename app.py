@@ -37,6 +37,7 @@ def create_app():
     from models.sentiment_result import SentimentResult
     from models.review import Review
     from models.fraud_detection_log import FraudDetectionLog
+    from models.feedback import Feedback
 
 
     # USER LOADER
@@ -58,6 +59,7 @@ def create_app():
     # REGISTER BLUEPRINT User
     from routes.user_auth_routes import user_auth_bp
     from routes.user_panel_routes import user_panel_bp
+    from routes.user_feedback_routes import user_feedback_bp
 
 
     app.register_blueprint(application_bp)
@@ -73,6 +75,7 @@ def create_app():
     # REGISTER BLUEPRINT User
     app.register_blueprint(user_auth_bp)
     app.register_blueprint(user_panel_bp)
+    app.register_blueprint(user_feedback_bp)
 
     @app.route('/')
     def home():

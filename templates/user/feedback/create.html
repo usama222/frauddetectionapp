@@ -1,0 +1,103 @@
+{% extends "user/layout.html" %}
+{% block title %}Write Feedback{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="nk-content-inner">
+    <div class="nk-content-body">
+
+      <!-- PAGE HEADER -->
+      <div class="nk-block-head nk-block-head-sm">
+        <div class="nk-block-between">
+          <div class="nk-block-head-content">
+            <h3 class="nk-block-title page-title">Write Feedback</h3>
+            <div class="nk-block-des text-soft">
+              <p>Share your feedback about the system with the admin.</p>
+            </div>
+          </div>
+          <div class="nk-block-head-content">
+            <a href="{{ url_for('user_feedback.index') }}" class="btn btn-outline-secondary btn-sm">
+              <em class="icon ni ni-arrow-left"></em>
+              <span>My Feedback</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLASH MESSAGES -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      <!-- FORM CARD -->
+      <div class="nk-block">
+        <div class="card card-bordered">
+          <div class="card-inner">
+
+            <form method="POST" action="{{ url_for('user_feedback.create') }}">
+
+              <!-- SUBJECT (optional) -->
+              <div class="form-group">
+                <label class="form-label" for="subject">Subject <span class="text-soft">(optional)</span></label>
+                <div class="form-control-wrap">
+                  <input type="text"
+                         id="subject"
+                         name="subject"
+                         class="form-control"
+                         placeholder="e.g. App issue, Suggestion...">
+                </div>
+              </div>
+
+              <!-- MESSAGE (required) -->
+              <div class="form-group">
+                <label class="form-label" for="message">Message <span class="text-danger">*</span></label>
+                <div class="form-control-wrap">
+                  <textarea id="message"
+                            name="message"
+                            class="form-control"
+                            rows="5"
+                            placeholder="Write your feedback here..."
+                            required></textarea>
+                </div>
+              </div>
+
+              <!-- RATING (optional) -->
+              <div class="form-group">
+                <label class="form-label">Rating <span class="text-soft">(optional)</span></label>
+                <div class="form-control-wrap">
+                  <div class="d-flex gap-3">
+                    {% for i in range(1, 6) %}
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="rating" id="rating{{ i }}" value="{{ i }}">
+                      <label class="form-check-label" for="rating{{ i }}">
+                        {{ i }} <em class="icon ni ni-star-fill text-warning"></em>
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+
+              <!-- SUBMIT -->
+              <div class="form-group mt-3">
+                <button type="submit" class="btn btn-primary">
+                  <em class="icon ni ni-send"></em>
+                  <span>Submit Feedback</span>
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

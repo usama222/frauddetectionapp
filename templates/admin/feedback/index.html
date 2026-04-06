@@ -44,7 +44,10 @@
                             <div class="nk-tb-item nk-tb-head">
                                 <div class="nk-tb-col"><span class="sub-text">#</span></div>
                                 <div class="nk-tb-col"><span class="sub-text">User</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">Subject</span></div>
                                 <div class="nk-tb-col"><span class="sub-text">Message</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">Rating</span></div>
+                                <div class="nk-tb-col"><span class="sub-text">IP Address</span></div>
                                 <div class="nk-tb-col"><span class="sub-text">Date</span></div>
                             </div>
 
@@ -61,10 +64,13 @@
                                 </div>
 
                                 <div class="nk-tb-col">
+                                    <span>{{ fb.subject or '—' }}</span>
+                                </div>
+
+                                <div class="nk-tb-col">
                                     <div>
                                         {{ fb.message[:60] }}{% if fb.message|length > 60 %}...{% endif %}
                                     </div>
-
                                     <a href="#"
                                        class="text-primary small"
                                        data-bs-toggle="modal"
@@ -74,17 +80,22 @@
                                 </div>
 
                                 <div class="nk-tb-col">
-                                    {{ fb.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    {% if fb.rating %}
+                                        {% for i in range(1, 6) %}
+                                          <em class="icon ni ni-star{% if i <= fb.rating %}-fill text-warning{% endif %}"></em>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-soft">—</span>
+                                    {% endif %}
                                 </div>
 
-<!--                                <div class="nk-tb-col nk-tb-col-tools">-->
-<!--                                    <a href="#"-->
-<!--                                       class="btn btn-sm btn-outline-primary"-->
-<!--                                       data-bs-toggle="modal"-->
-<!--                                       data-bs-target="#feedbackModal{{ fb.id }}">-->
-<!--                                        View-->
-<!--                                    </a>-->
-<!--                                </div>-->
+                                <div class="nk-tb-col">
+                                    <span class="text-soft">{{ fb.ip_address or '—' }}</span>
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    {{ fb.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                </div>
                             </div>
 
                             <!-- VIEW MODAL -->

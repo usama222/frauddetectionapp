@@ -1,0 +1,92 @@
+{% extends "user/layout.html" %}
+{% block title %}My Feedback{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="nk-content-inner">
+    <div class="nk-content-body">
+
+      <!-- PAGE HEADER -->
+      <div class="nk-block-head nk-block-head-sm">
+        <div class="nk-block-between">
+          <div class="nk-block-head-content">
+            <h3 class="nk-block-title page-title">My Feedback</h3>
+            <div class="nk-block-des text-soft">
+              <p>All feedback you have submitted to the admin.</p>
+            </div>
+          </div>
+          <div class="nk-block-head-content">
+            <a href="{{ url_for('user_feedback.create') }}" class="btn btn-primary">
+              <em class="icon ni ni-plus"></em>
+              <span>Write Feedback</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLASH MESSAGES -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      <!-- CARD -->
+      <div class="card card-bordered card-stretch" style="width: 100%;">
+        <div class="card-inner-group">
+          <div class="card-inner p-0">
+            <div class="nk-tb-list nk-tb-ulist">
+
+              <!-- HEAD -->
+              <div class="nk-tb-item nk-tb-head">
+                <div class="nk-tb-col"><span class="sub-text">#</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Subject</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Message</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Rating</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Submitted</span></div>
+              </div>
+
+              <!-- ROWS -->
+              {% for fb in feedbacks %}
+              <div class="nk-tb-item">
+                <div class="nk-tb-col">
+                  <span>{{ loop.index }}</span>
+                </div>
+                <div class="nk-tb-col">
+                  <span class="tb-lead">{{ fb.subject or '—' }}</span>
+                </div>
+                <div class="nk-tb-col">
+                  <span class="text-soft">{{ fb.message | truncate(80) }}</span>
+                </div>
+                <div class="nk-tb-col">
+                  {% if fb.rating %}
+                    {% for i in range(1, 6) %}
+                      <em class="icon ni ni-star{% if i <= fb.rating %}-fill text-warning{% endif %}"></em>
+                    {% endfor %}
+                  {% else %}
+                    <span class="text-soft">—</span>
+                  {% endif %}
+                </div>
+                <div class="nk-tb-col">
+                  <span>{{ fb.created_at.strftime('%Y-%m-%d %H:%M') if fb.created_at else '—' }}</span>
+                </div>
+              </div>
+              {% else %}
+              <div class="p-4 text-center text-soft">
+                You have not submitted any feedback yet.
+                <a href="{{ url_for('user_feedback.create') }}">Write one now</a>.
+              </div>
+              {% endfor %}
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

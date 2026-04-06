@@ -33,8 +33,10 @@
                                 <div class="nk-tb-col"><span>User</span></div>
                                 <div class="nk-tb-col"><span>Application</span></div>
                                 <div class="nk-tb-col"><span>Review</span></div>
+                                <div class="nk-tb-col"><span>Rating</span></div>
+                                <div class="nk-tb-col"><span>IP Address</span></div>
                                 <div class="nk-tb-col"><span>Sentiment</span></div>
-                                <div class="nk-tb-col"><span>Fake Probability</span></div>
+                                <div class="nk-tb-col"><span>Fake Flag</span></div>
                             </div>
 
                             <!-- ROWS -->
@@ -58,31 +60,36 @@
                                 </div>
 
                                 <div class="nk-tb-col">
-                                 {% if r.sentiment_result %}
-                                    <span class="badge badge-dim
-                                        {% if 'Positive' in r.sentiment_result.sentiment_label %}
-                                            bg-outline-success
-                                        {% elif 'Negative' in r.sentiment_result.sentiment_label %}
-                                            bg-outline-danger
-                                        {% else %}
-                                            bg-outline-warning
-                                        {% endif %}
-                                    ">
-                                        {{ r.sentiment_result.sentiment_label }}
-                                    </span>
-                                {% else %}
-                                    <span class="badge badge-dim bg-outline-secondary">
-                                        Pending
-                                    </span>
-                                {% endif %}
+                                    {% for i in range(1, 6) %}
+                                      <em class="icon ni ni-star{% if i <= (r.rating or 0) %}-fill text-warning{% endif %}"></em>
+                                    {% endfor %}
+                                </div>
 
+                                <div class="nk-tb-col">
+                                    <span class="text-soft">{{ r.ip_address or '—' }}</span>
                                 </div>
 
                                 <div class="nk-tb-col">
                                     {% if r.sentiment_result %}
-                                        {{ r.sentiment_result.fake_probability }}
+                                        <span class="badge badge-dim
+                                            {% if r.sentiment_result.sentiment_label == 'Positive' %}bg-outline-success
+                                            {% elif r.sentiment_result.sentiment_label == 'Negative' %}bg-outline-danger
+                                            {% else %}bg-outline-warning{% endif %}">
+                                            {{ r.sentiment_result.sentiment_label }}
+                                        </span>
                                     {% else %}
-                                        -
+                                        <span class="badge badge-dim bg-outline-secondary">Pending</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="nk-tb-col">
+                                    {% if r.is_fake %}
+                                        <span class="badge bg-danger">Fake</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Genuine</span>
+                                    {% endif %}
+                                    {% if r.is_duplicate %}
+                                        <span class="badge bg-warning text-dark ms-1">Duplicate</span>
                                     {% endif %}
                                 </div>
                             </div>

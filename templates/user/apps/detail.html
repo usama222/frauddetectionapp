@@ -1,110 +1,319 @@
 {% extends "user/layout.html" %}
-{% block title %}App Detail{% endblock %}
+{% block title %}{{ app.name }}{% endblock %}
 
 {% block content %}
-<div class="nk-block">
-    <div class="nk-block-head">
-        <div class="nk-block-head-content">
-            <h4 class="nk-block-title">{{ app.name }}</h4>
-            <p class="text-muted">Post a review (Prototype requirement)</p>
-        </div>
-    </div>
+<div class="container-fluid">
+  <div class="nk-content-inner">
+    <div class="nk-content-body">
 
-    <div class="card card-bordered mb-3">
-        <div class="card-inner">
+      <!-- PAGE HEADER -->
+      <div class="nk-block-head nk-block-head-sm">
+        <div class="nk-block-between">
+          <div class="nk-block-head-content d-flex align-items-center gap-3">
+            {% if app.logo_path %}
+              <div style="width:56px;height:56px;border-radius:10px;overflow:hidden;background:#f5f6fa;display:flex;align-items:center;justify-content:center;">
+                <img src="{{ url_for('static', filename=app.logo_path) }}"
+                     alt="{{ app.name }}"
+                     style="width:100%;height:100%;object-fit:contain;">
+              </div>
+            {% endif %}
+            <div>
+              <h3 class="nk-block-title page-title mb-0">{{ app.name }}</h3>
+              <span class="text-soft">{{ app.category.name if app.category else '' }}</span>
+            </div>
+          </div>
+          <div class="nk-block-head-content d-flex align-items-center gap-2">
+            {% set st = app.fraud_status or 'Pending' %}
+            <span class="badge
+              {% if st == 'Genuine' %}bg-success
+              {% elif st == 'Suspicious' %}bg-warning text-dark
+              {% elif st == 'Fraud' %}bg-danger
+              {% else %}bg-secondary{% endif %} fs-13px px-3 py-2">
+              {{ st }}
+            </span>
+            {% if app.download_link %}
+              <a href="{{ app.download_link }}" target="_blank" class="btn btn-primary btn-sm">
+                <em class="icon ni ni-download"></em> Download
+              </a>
+            {% endif %}
+            <a href="{{ url_for('user_panel.apps_list') }}" class="btn btn-outline-secondary btn-sm">
+              <em class="icon ni ni-arrow-left"></em> Back
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI CARDS -->
+      <div class="nk-block">
+        <div class="row g-gs">
+
+          <div class="col-6 col-lg-3">
+            <div class="card card-bordered h-100">
+              <div class="card-inner text-center">
+                <em class="icon ni ni-star-fill text-warning fs-28px"></em>
+                <div class="fs-24px fw-bold mt-1">{{ "%.1f"|format(app.avg_rating or 0) }}</div>
+                <div class="text-soft">Avg Rating</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="card card-bordered h-100">
+              <div class="card-inner text-center">
+                <em class="icon ni ni-edit text-info fs-28px"></em>
+                <div class="fs-24px fw-bold mt-1">{{ total_reviews }}</div>
+                <div class="text-soft">Total Reviews</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="card card-bordered h-100">
+              <div class="card-inner text-center">
+                <em class="icon ni ni-check-circle text-success fs-28px"></em>
+                <div class="fs-24px fw-bold mt-1">{{ genuine_count }}</div>
+                <div class="text-soft">Genuine Reviews</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="card card-bordered h-100">
+              <div class="card-inner text-center">
+                <em class="icon ni ni-alert text-danger fs-28px"></em>
+                <div class="fs-24px fw-bold mt-1">{{ fake_count }}</div>
+                <div class="text-soft">Fake Reviews</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="nk-block mt-4">
+        <div class="row g-gs">
+
+          <!-- Sentiment Doughnut -->
+          <div class="col-lg-4">
+            <div class="card card-bordered h-100">
+              <div class="card-inner">
+                <h6 class="title mb-1">Sentiment Distribution</h6>
+                <p class="text-soft mb-3">Genuine reviews only</p>
+                <canvas id="sentimentChart" height="230"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rating Bar -->
+          <div class="col-lg-4">
+            <div class="card card-bordered h-100">
+              <div class="card-inner">
+                <h6 class="title mb-1">Rating Breakdown</h6>
+                <p class="text-soft mb-3">All reviews by star</p>
+                <canvas id="ratingChart" height="230"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fake vs Genuine Doughnut -->
+          <div class="col-lg-4">
+            <div class="card card-bordered h-100">
+              <div class="card-inner">
+                <h6 class="title mb-1">Fake vs Genuine</h6>
+                <p class="text-soft mb-3">Review authenticity</p>
+                <canvas id="fakeChart" height="230"></canvas>
+                <div class="text-center mt-2">
+                  {% if total_reviews > 0 %}
+                    <span class="text-soft">
+                      {{ ((fake_count / total_reviews) * 100) | round(1) }}% flagged as fake
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- APP DESCRIPTION -->
+      {% if app.description %}
+      <div class="nk-block mt-4">
+        <div class="card card-bordered">
+          <div class="card-inner">
+            <h6 class="title mb-2">About this App</h6>
+            <p class="text-soft">{{ app.description }}</p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- REVIEW FORM -->
+      <div class="nk-block mt-4">
+        <div class="card card-bordered">
+          <div class="card-inner">
+            <h6 class="title mb-3">Write a Review</h6>
             <form method="POST" action="{{ url_for('user_panel.post_review', app_id=app.id) }}">
-                <div class="form-group">
-                    <label class="form-label">Rating</label>
-                    <input type="hidden" name="rating" id="ratingInput" value="" required>
-                    <div class="d-flex align-items-center gap-1" id="ratingStars" style="font-size: 22px; cursor: pointer;">
-                        {% for i in range(1,6) %}
-                            <em class="icon ni ni-star text-warning" data-value="{{ i }}" aria-label="{{ i }}"></em>
-                        {% endfor %}
-                        <span class="text-soft ms-2" id="ratingText">Select rating</span>
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <label>Review</label>
-                    <textarea name="review_text" class="form-control" rows="4" required></textarea>
+              <div class="form-group">
+                <label class="form-label">Rating</label>
+                <input type="hidden" name="rating" id="ratingInput" value="" required>
+                <div class="d-flex align-items-center gap-1" id="ratingStars" style="font-size:24px;cursor:pointer;">
+                  {% for i in range(1,6) %}
+                    <em class="icon ni ni-star text-warning" data-value="{{ i }}"></em>
+                  {% endfor %}
+                  <span class="text-soft ms-2 fs-14px" id="ratingText">Select rating</span>
                 </div>
+              </div>
 
-                <button class="btn btn-primary mt-2">Submit Review</button>
+              <div class="form-group">
+                <label class="form-label">Your Review</label>
+                <textarea name="review_text" class="form-control" rows="4"
+                          placeholder="Share your experience with this app..." required></textarea>
+              </div>
+
+              <button class="btn btn-primary">
+                <em class="icon ni ni-send"></em> Submit Review
+              </button>
             </form>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <div class="card card-bordered">
-        <div class="card-inner">
-            <h6 class="mb-3">Recent Reviews</h6>
+      <!-- REVIEWS LIST -->
+      <div class="nk-block mt-4">
+        <div class="card card-bordered">
+          <div class="card-inner">
+            <h6 class="title mb-3">All Reviews ({{ total_reviews }})</h6>
 
             {% for r in reviews %}
-                <div class="border-bottom py-2">
-                    <div class="d-flex justify-content-between">
-                        <strong>{{ r.user.name if r.user else 'User' }}</strong>
-                       {% set rr = (r.rating or 0) | int %}
-                        <span class="d-inline-flex align-items-center">
-                          <span class="rating-stars me-2">
-                            {% for i in range(1,6) %}
-                              {% if i <= rr %}
-                                <em class="icon ni ni-star-fill text-warning"></em>
-                              {% else %}
-                                <em class="icon ni ni-star"></em>
-                              {% endif %}
-                            {% endfor %}
-                          </span>
-                          <span class="text-soft small">{{ rr }}/5</span>
-                        </span>
-                    </div>
-
-                    <div class="text-muted small">
-                        {% if r.is_duplicate %} <span class="badge bg-warning">Duplicate (IP)</span> {% endif %}
-                        {% if r.is_fake %} <span class="badge bg-danger">Fake</span> {% endif %}
-                    </div>
-
-                    <p class="mt-1">{{ r.review_text }}</p>
+            <div class="border-bottom py-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>{{ r.user.name if r.user else 'User' }}</strong>
+                  <span class="text-soft ms-2 fs-12px">
+                    {{ r.created_at.strftime('%Y-%m-%d') if r.created_at else '' }}
+                  </span>
                 </div>
+                <div class="d-flex align-items-center gap-2">
+                  <!-- Stars -->
+                  <span>
+                    {% for i in range(1,6) %}
+                      <em class="icon ni ni-star{% if i <= (r.rating or 0) %}-fill text-warning{% endif %}"></em>
+                    {% endfor %}
+                  </span>
+                  <!-- Badges -->
+                  {% if r.is_duplicate %}
+                    <span class="badge bg-warning text-dark">Duplicate</span>
+                  {% endif %}
+                  {% if r.is_fake %}
+                    <span class="badge bg-danger">Fake</span>
+                  {% endif %}
+                  <!-- Sentiment -->
+                  {% if r.sentiment_result %}
+                    {% set lbl = r.sentiment_result.sentiment_label %}
+                    <span class="badge
+                      {% if lbl == 'Positive' %}bg-success
+                      {% elif lbl == 'Negative' %}bg-danger
+                      {% else %}bg-secondary{% endif %}">
+                      {{ lbl }}
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+              <p class="mt-2 mb-0">{{ r.review_text }}</p>
+            </div>
             {% else %}
-                <p class="text-muted">No reviews yet.</p>
+            <p class="text-soft text-center py-3">No reviews yet. Be the first to review.</p>
             {% endfor %}
-        </div>
-    </div>
-</div>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const starsWrap = document.getElementById('ratingStars');
-  if (!starsWrap) return;
 
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  // Sentiment Doughnut
+  new Chart(document.getElementById('sentimentChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Positive', 'Neutral', 'Negative'],
+      datasets: [{
+        data: [
+          {{ sentiment_map.Positive }},
+          {{ sentiment_map.Neutral }},
+          {{ sentiment_map.Negative }}
+        ],
+        backgroundColor: ['#1ee0ac', '#b8b8b8', '#e85347'],
+        borderWidth: 2
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Rating Bar
+  new Chart(document.getElementById('ratingChart'), {
+    type: 'bar',
+    data: {
+      labels: ['1★', '2★', '3★', '4★', '5★'],
+      datasets: [{
+        label: 'Reviews',
+        data: [
+          {{ rating_dist[1] }}, {{ rating_dist[2] }},
+          {{ rating_dist[3] }}, {{ rating_dist[4] }}, {{ rating_dist[5] }}
+        ],
+        backgroundColor: ['#e85347','#f4bd0e','#b8b8b8','#09c2de','#1ee0ac'],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+  });
+
+  // Fake vs Genuine Doughnut
+  new Chart(document.getElementById('fakeChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Genuine', 'Fake'],
+      datasets: [{
+        data: [{{ genuine_count }}, {{ fake_count }}],
+        backgroundColor: ['#1ee0ac', '#e85347'],
+        borderWidth: 2
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Star rating interaction
+  const starsWrap = document.getElementById('ratingStars');
   const stars = starsWrap.querySelectorAll('em[data-value]');
   const input = document.getElementById('ratingInput');
-  const text = document.getElementById('ratingText');
+  const text  = document.getElementById('ratingText');
 
-  function paint(selected) {
-    stars.forEach(star => {
-      const val = parseInt(star.getAttribute('data-value'));
-      star.classList.remove('ni-star', 'ni-star-fill');
-      star.classList.add(val <= selected ? 'ni-star-fill' : 'ni-star');
+  function paint(val) {
+    stars.forEach(s => {
+      const v = parseInt(s.dataset.value);
+      s.classList.toggle('ni-star-fill', v <= val);
+      s.classList.toggle('ni-star', v > val);
     });
-    if (selected > 0) {
-      text.textContent = selected + '/5';
-      input.value = selected;
-    } else {
-      text.textContent = 'Select rating';
-      input.value = '';
-    }
+    text.textContent = val > 0 ? val + '/5' : 'Select rating';
+    input.value = val > 0 ? val : '';
   }
 
-  stars.forEach(star => {
-    star.addEventListener('mouseenter', () => paint(parseInt(star.dataset.value)));
-    star.addEventListener('click', () => paint(parseInt(star.dataset.value)));
+  stars.forEach(s => {
+    s.addEventListener('mouseenter', () => paint(parseInt(s.dataset.value)));
+    s.addEventListener('click',      () => paint(parseInt(s.dataset.value)));
   });
-
-  starsWrap.addEventListener('mouseleave', () => {
-    paint(parseInt(input.value || 0));
-  });
-
-  // initial
+  starsWrap.addEventListener('mouseleave', () => paint(parseInt(input.value || 0)));
   paint(0);
-});
 </script>
 {% endblock %}

@@ -1,7 +1,299 @@
 {% extends "user/layout.html" %}
 {% block title %}Dashboard{% endblock %}
+
 {% block content %}
-<div class="nk-block">
-  <!-- Blank dashboard for prototype -->
+<div class="container-fluid">
+  <div class="nk-content-inner">
+    <div class="nk-content-body">
+
+      <!-- PAGE HEADER -->
+      <div class="nk-block-head nk-block-head-sm">
+        <div class="nk-block-between">
+          <div class="nk-block-head-content">
+            <h3 class="nk-block-title page-title">Welcome, {{ current_user.name }}</h3>
+            <div class="nk-block-des text-soft">
+              <p>Here's your activity overview.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI CARDS -->
+      <div class="nk-block">
+        <div class="row g-gs">
+
+          <div class="col-sm-6 col-lg-3">
+            <div class="card card-bordered">
+              <div class="card-inner">
+                <div class="card-title-group align-start mb-2">
+                  <div class="card-title">
+                    <h6 class="subtitle">Total Apps</h6>
+                  </div>
+                  <div class="card-tools">
+                    <em class="card-hint-icon icon ni ni-mobile fs-22px text-primary"></em>
+                  </div>
+                </div>
+                <div class="card-amount">
+                  <span class="amount fs-28px fw-bold">{{ total_apps }}</span>
+                </div>
+                <div class="invest-data-ck">
+                  <p class="text-soft mt-1">On platform</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-lg-3">
+            <div class="card card-bordered h-100">
+              <div class="card-inner">
+                <div class="card-title-group align-start mb-2">
+                  <div class="card-title">
+                    <h6 class="subtitle">My Reviews</h6>
+                  </div>
+                  <div class="card-tools">
+                    <em class="card-hint-icon icon ni ni-edit fs-22px text-info"></em>
+                  </div>
+                </div>
+                <div class="card-amount">
+                  <span class="amount fs-28px fw-bold">{{ total_reviews }}</span>
+                </div>
+                <p class="text-soft mt-1">Total submitted</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-lg-3">
+            <div class="card card-bordered h-100">
+              <div class="card-inner">
+                <div class="card-title-group align-start mb-2">
+                  <div class="card-title">
+                    <h6 class="subtitle">Duplicate Reviews</h6>
+                  </div>
+                  <div class="card-tools">
+                    <em class="card-hint-icon icon ni ni-copy fs-22px text-warning"></em>
+                  </div>
+                </div>
+                <div class="card-amount">
+                  <span class="amount fs-28px fw-bold">{{ duplicate_count }}</span>
+                </div>
+                <p class="text-soft mt-1">Flagged as duplicate</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-lg-3">
+            <div class="card card-bordered h-100">
+              <div class="card-inner">
+                <div class="card-title-group align-start mb-2">
+                  <div class="card-title">
+                    <h6 class="subtitle">Fake Flagged</h6>
+                  </div>
+                  <div class="card-tools">
+                    <em class="card-hint-icon icon ni ni-alert fs-22px text-danger"></em>
+                  </div>
+                </div>
+                <div class="card-amount">
+                  <span class="amount fs-28px fw-bold">{{ fake_count }}</span>
+                </div>
+                <p class="text-soft mt-1">Detected as fake</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- .nk-block -->
+
+      <!-- CHARTS ROW -->
+      <div class="nk-block mt-4">
+        <div class="row g-gs">
+
+          <!-- PIE: Sentiment Distribution -->
+          <div class="col-lg-5">
+            <div class="card card-bordered h-100">
+              <div class="card-inner">
+                <div class="card-title-group mb-3">
+                  <div class="card-title">
+                    <h6 class="title">Sentiment Distribution</h6>
+                    <p class="text-soft">Based on your reviews</p>
+                  </div>
+                </div>
+                {% if sentiment_data %}
+                  <canvas id="sentimentPie" height="220"></canvas>
+                {% else %}
+                  <div class="text-center text-soft py-5">No sentiment data yet.</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- BAR: Reviews per App -->
+          <div class="col-lg-7">
+            <div class="card card-bordered h-100">
+              <div class="card-inner">
+                <div class="card-title-group mb-3">
+                  <div class="card-title">
+                    <h6 class="title">Reviews per App</h6>
+                    <p class="text-soft">Top 5 apps you reviewed</p>
+                  </div>
+                </div>
+                {% if bar_data %}
+                  <canvas id="reviewsBar" height="220"></canvas>
+                {% else %}
+                  <div class="text-center text-soft py-5">No review data yet.</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- .nk-block -->
+
+      <!-- RECENT ACTIVITY TABLE -->
+      <div class="nk-block mt-4">
+        <div class="card card-bordered">
+          <div class="card-inner">
+            <div class="card-title-group mb-3">
+              <div class="card-title">
+                <h6 class="title">Recent Reviews</h6>
+                <p class="text-soft">Your last 5 submitted reviews</p>
+              </div>
+              <div class="card-tools">
+                <a href="{{ url_for('user_panel.apps_list') }}" class="btn btn-sm btn-outline-primary">
+                  Browse Apps
+                </a>
+              </div>
+            </div>
+
+            {% if recent_reviews %}
+            <div class="nk-tb-list nk-tb-ulist">
+
+              <div class="nk-tb-item nk-tb-head">
+                <div class="nk-tb-col"><span class="sub-text">App</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Review</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Rating</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Sentiment</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Flags</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Date</span></div>
+              </div>
+
+              {% for r in recent_reviews %}
+              <div class="nk-tb-item">
+
+                <div class="nk-tb-col">
+                  <span class="tb-lead">{{ r.application.name if r.application else '—' }}</span>
+                </div>
+
+                <div class="nk-tb-col">
+                  <span class="text-soft">{{ r.review_text | truncate(60) }}</span>
+                </div>
+
+                <div class="nk-tb-col">
+                  {% for i in range(1, 6) %}
+                    <em class="icon ni ni-star{% if i <= r.rating %}-fill text-warning{% endif %}"></em>
+                  {% endfor %}
+                </div>
+
+                <div class="nk-tb-col">
+                  {% if r.sentiment_result %}
+                    {% set lbl = r.sentiment_result.sentiment_label %}
+                    <span class="badge badge-dot
+                      {% if lbl == 'Positive' %}bg-success
+                      {% elif lbl == 'Negative' %}bg-danger
+                      {% else %}bg-secondary{% endif %}">
+                      {{ lbl }}
+                    </span>
+                  {% else %}
+                    <span class="text-soft">—</span>
+                  {% endif %}
+                </div>
+
+                <div class="nk-tb-col">
+                  {% if r.is_duplicate %}
+                    <span class="badge bg-warning text-dark me-1">Duplicate</span>
+                  {% endif %}
+                  {% if r.is_fake %}
+                    <span class="badge bg-danger">Fake</span>
+                  {% endif %}
+                  {% if not r.is_duplicate and not r.is_fake %}
+                    <span class="badge bg-success">Clean</span>
+                  {% endif %}
+                </div>
+
+                <div class="nk-tb-col">
+                  <span class="text-soft">
+                    {{ r.created_at.strftime('%Y-%m-%d') if r.created_at else '—' }}
+                  </span>
+                </div>
+
+              </div>
+              {% endfor %}
+
+            </div>
+            {% else %}
+              <div class="text-center text-soft py-4">
+                You haven't submitted any reviews yet.
+                <a href="{{ url_for('user_panel.apps_list') }}">Browse apps</a> to get started.
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div><!-- .nk-block -->
+
+    </div>
+  </div>
 </div>
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  // ── Sentiment Pie ──────────────────────────────────────
+  {% if sentiment_data %}
+  const pieCtx = document.getElementById('sentimentPie').getContext('2d');
+  new Chart(pieCtx, {
+    type: 'doughnut',
+    data: {
+      labels: {{ sentiment_labels | tojson }},
+      datasets: [{
+        data: {{ sentiment_data | tojson }},
+        backgroundColor: ['#1ee0ac', '#e85347', '#b8b8b8'],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+  {% endif %}
+
+  // ── Reviews per App Bar ────────────────────────────────
+  {% if bar_data %}
+  const barCtx = document.getElementById('reviewsBar').getContext('2d');
+  new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ bar_labels | tojson }},
+      datasets: [{
+        label: 'Reviews',
+        data: {{ bar_data | tojson }},
+        backgroundColor: '#6576ff',
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 }
+        }
+      }
+    }
+  });
+  {% endif %}
+</script>
 {% endblock %}

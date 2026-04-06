@@ -19,12 +19,12 @@
 
                     <div class="nk-block-head-content">
                         <ul class="nk-block-tools g-3">
-                            <li>
+                            <!-- <li>
                                 <a href="#" class="btn btn-white btn-outline-light">
                                     <em class="icon ni ni-download-cloud"></em>
                                     <span>Export</span>
                                 </a>
-                            </li>
+                            </li> -->
                             <li>
                                 <a href="/admin/applications/add" class="btn btn-primary">
                                     <em class="icon ni ni-plus"></em>
@@ -84,13 +84,14 @@
 
                                 <div class="nk-tb-col tb-col-sm">
                                     {% if app.logo_path %}
-                                        <img src="{{ url_for('static', filename=app.logo_path) }}"
-                                             alt="{{ app.name }}"
-                                             class="rounded"
-                                             style="width:36px;height:36px;object-fit:cover;">
+                                        <div style="width:40px;height:40px;border-radius:8px;overflow:hidden;background:#f5f6fa;display:flex;align-items:center;justify-content:center;">
+                                            <img src="{{ url_for('static', filename=app.logo_path) }}"
+                                                 alt="{{ app.name }}"
+                                                 style="width:100%;height:100%;object-fit:contain;">
+                                        </div>
                                     {% else %}
-                                        <div class="text-soft small">
-                                            No Logo
+                                        <div style="width:40px;height:40px;border-radius:8px;background:#f5f6fa;display:flex;align-items:center;justify-content:center;">
+                                            <em class="icon ni ni-mobile text-soft"></em>
                                         </div>
                                     {% endif %}
                                 </div>

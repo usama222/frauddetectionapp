@@ -1,0 +1,146 @@
+{% extends "user/layout.html" %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="nk-content-inner">
+    <div class="nk-content-body">
+
+      <!-- PAGE HEADER -->
+      <div class="nk-block-head nk-block-head-sm">
+        <div class="nk-block-between">
+          <div class="nk-block-head-content">
+            <h3 class="nk-block-title page-title">My Profile</h3>
+            <div class="nk-block-des text-soft">
+              <p>Update your name, email or password.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLASH MESSAGES -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      <!-- PROFILE CARD -->
+      <div class="nk-block">
+        <div class="row g-gs">
+
+          <!-- AVATAR + INFO -->
+          <div class="col-lg-3">
+            <div class="card card-bordered text-center">
+              <div class="card-inner py-4">
+                <div class="user-avatar user-avatar-xl bg-primary mx-auto mb-3"
+                     style="width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;">
+                  {{ current_user.name[0].upper() }}
+                </div>
+                <h5 class="title">{{ current_user.name }}</h5>
+                <span class="sub-text">{{ current_user.email }}</span>
+                <div class="mt-2">
+                  <span class="badge bg-primary">{{ current_user.role.role_name }}</span>
+                </div>
+                <div class="text-soft mt-2 fs-12px">
+                  Joined: {{ current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else '—' }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- EDIT FORM -->
+          <div class="col-lg-9">
+            <div class="card card-bordered">
+              <div class="card-inner">
+                <h6 class="title mb-4">Edit Information</h6>
+
+                <form method="POST" action="{{ url_for('user_panel.profile') }}">
+
+                  <div class="row g-3">
+
+                    <!-- NAME -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <div class="form-control-wrap">
+                          <input type="text"
+                                 name="name"
+                                 class="form-control"
+                                 value="{{ current_user.name }}"
+                                 required>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- EMAIL -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                        <div class="form-control-wrap">
+                          <input type="email"
+                                 name="email"
+                                 class="form-control"
+                                 value="{{ current_user.email }}"
+                                 required>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- DIVIDER -->
+                    <div class="col-12">
+                      <hr class="my-1">
+                      <p class="text-soft fs-12px">Leave password fields empty if you don't want to change it.</p>
+                    </div>
+
+                    <!-- NEW PASSWORD -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <div class="form-control-wrap">
+                          <input type="password"
+                                 name="password"
+                                 class="form-control"
+                                 placeholder="Min 6 characters">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- CONFIRM PASSWORD -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <div class="form-control-wrap">
+                          <input type="password"
+                                 name="confirm_password"
+                                 class="form-control"
+                                 placeholder="Repeat new password">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- SUBMIT -->
+                    <div class="col-12 mt-2">
+                      <button type="submit" class="btn btn-primary">
+                        <em class="icon ni ni-save"></em>
+                        <span>Save Changes</span>
+                      </button>
+                    </div>
+
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
