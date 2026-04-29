@@ -225,6 +225,10 @@ def post_review(app_id):
     from services.rating_service import recalc_app_avg_rating
     recalc_app_avg_rating(app_id)
 
+    # fraud log refresh — keeps fraud dashboard always updated
+    from services.fraud_detection_service import analyze_application_fraud
+    analyze_application_fraud(app_id)
+
     return redirect(url_for('user_panel.app_detail', app_id=app_id))
 
 

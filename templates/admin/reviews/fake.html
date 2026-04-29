@@ -1,0 +1,144 @@
+{% extends "admin/layout.html" %}
+{% block title %}Fake Reviews{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="nk-content-inner">
+    <div class="nk-content-body">
+
+      <!-- HEADER -->
+      <div class="nk-block-head nk-block-head-sm">
+        <div class="nk-block-between">
+          <div class="nk-block-head-content">
+            <h3 class="nk-block-title page-title">Fake Reviews</h3>
+            <div class="nk-block-des text-soft">
+              <p>Reviews automatically flagged as fake by sentiment analysis (fake_probability &ge; 0.7).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD -->
+      <div class="card card-bordered card-stretch">
+        <div class="card-inner-group">
+          <div class="card-inner p-0">
+            <div class="nk-tb-list nk-tb-ulist">
+
+              <!-- HEAD -->
+              <div class="nk-tb-item nk-tb-head">
+                <div class="nk-tb-col"><span class="sub-text">#</span></div>
+                <div class="nk-tb-col"><span class="sub-text">User</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Application</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Review</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Rating</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Sentiment</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Fake Prob.</span></div>
+                <div class="nk-tb-col"><span class="sub-text">Date</span></div>
+                <div class="nk-tb-col nk-tb-col-tools text-end"><span class="sub-text">Action</span></div>
+              </div>
+
+              <!-- ROWS -->
+              {% for r in reviews.items %}
+              <div class="nk-tb-item">
+
+                <div class="nk-tb-col">
+                  {{ (reviews.page - 1) * reviews.per_page + loop.index }}
+                </div>
+
+                <div class="nk-tb-col">
+                  <span class="tb-lead">{{ r.user.name if r.user else '—' }}</span>
+                  <span class="sub-text">{{ r.user.email if r.user else '' }}</span>
+                </div>
+
+                <div class="nk-tb-col">
+                  <span>{{ r.application.name if r.application else '—' }}</span>
+                </div>
+
+                <div class="nk-tb-col">
+                  <span class="text-soft">
+                    {{ r.review_text[:70] }}{% if r.review_text|length > 70 %}...{% endif %}
+                  </span>
+                </div>
+
+                <div class="nk-tb-col">
+                  {% for i in range(1, 6) %}
+                    <em class="icon ni ni-star{% if i <= (r.rating or 0) %}-fill text-warning{% endif %}"></em>
+                  {% endfor %}
+                </div>
+
+                <div class="nk-tb-col">
+                  {% if r.sentiment_result %}
+                    {% set lbl = r.sentiment_result.sentiment_label %}
+                    <span class="badge badge-dim
+                      {% if lbl == 'Positive' %}bg-outline-success
+                      {% elif lbl == 'Negative' %}bg-outline-danger
+                      {% else %}bg-outline-warning{% endif %}">
+                      {{ lbl }}
+                    </span>
+                  {% else %}
+                    <span class="text-soft">—</span>
+                  {% endif %}
+                </div>
+
+                <div class="nk-tb-col">
+                  {% if r.sentiment_result %}
+                    <span class="badge bg-danger">
+                      {{ r.sentiment_result.fake_probability }}
+                    </span>
+                  {% else %}
+                    <span class="text-soft">—</span>
+                  {% endif %}
+                </div>
+
+                <div class="nk-tb-col">
+                  <span class="text-soft">
+                    {{ r.created_at.strftime('%Y-%m-%d') if r.created_at else '—' }}
+                  </span>
+                </div>
+
+                <div class="nk-tb-col nk-tb-col-tools text-end">
+                  <form method="POST"
+                        action="{{ url_for('reviews.delete_review', id=r.id, **{'from': 'fake'}) }}"
+                        onsubmit="return confirm('Delete this fake review?');">
+                    <button class="btn btn-sm btn-danger">
+                      <em class="icon ni ni-trash"></em>
+                    </button>
+                  </form>
+                </div>
+
+              </div>
+              {% else %}
+              <div class="p-4 text-center text-soft">No fake reviews found.</div>
+              {% endfor %}
+
+            </div>
+          </div>
+
+          <!-- PAGINATION -->
+          <div class="card-inner">
+            <ul class="pagination justify-content-start">
+              <li class="page-item {% if not reviews.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('reviews.fake_reviews', page=reviews.prev_num) }}">Prev</a>
+              </li>
+              {% for page_num in reviews.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                  <li class="page-item {% if page_num == reviews.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('reviews.fake_reviews', page=page_num) }}">{{ page_num }}</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+              {% endfor %}
+              <li class="page-item {% if not reviews.has_next %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('reviews.fake_reviews', page=reviews.next_num) }}">Next</a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

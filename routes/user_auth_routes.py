@@ -64,7 +64,7 @@ def login():
 
         if user and user.role.role_name == "User" and user.status and check_password_hash(user.password, password):
             login_user(user)
-            return redirect(url_for('user_panel.apps_list'))
+            return redirect(url_for('user_panel.dashboard'))
 
         return render_template('user/auth/login.html', error="Invalid user credentials")
 
