@@ -14,74 +14,111 @@
     <div class="row g-4 mb-4">
 
         <div class="col-md-3">
-            <div class="card card-bordered">
-                <div class="card-inner text-center">
-                    <em class="icon ni ni-users text-primary fs-28"></em>
-                    <h6>Total Users</h6>
-                    <h3>{{ total_users }}</h3>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#6576ff,#8e9dff);color:#fff;box-shadow:0 4px 20px rgba(101,118,255,0.35);">
+                <div class="card-inner py-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">TOTAL USERS</span>
+                        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                            <em class="icon ni ni-users" style="font-size:20px;color:#fff;"></em>
+                        </div>
+                    </div>
+                    <div style="font-size:36px;font-weight:800;line-height:1;">{{ total_users }}</div>
+                    <div style="font-size:12px;opacity:0.8;margin-top:6px;">Registered users</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card card-bordered">
-                <div class="card-inner text-center">
-                    <em class="icon ni ni-grid text-info fs-28"></em>
-                    <h6>Total Applications</h6>
-                    <h3>{{ total_apps }}</h3>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#09c2de,#4dd9ec);color:#fff;box-shadow:0 4px 20px rgba(9,194,222,0.35);">
+                <div class="card-inner py-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">TOTAL APPLICATIONS</span>
+                        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                            <em class="icon ni ni-grid" style="font-size:20px;color:#fff;"></em>
+                        </div>
+                    </div>
+                    <div style="font-size:36px;font-weight:800;line-height:1;">{{ total_apps }}</div>
+                    <div style="font-size:12px;opacity:0.8;margin-top:6px;">Apps in system</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card card-bordered">
-                <div class="card-inner text-center">
-                    <em class="icon ni ni-comments text-success fs-28"></em>
-                    <h6>Total Reviews</h6>
-                    <h3>{{ total_reviews }}</h3>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#1ee0ac,#4eedc4);color:#fff;box-shadow:0 4px 20px rgba(30,224,172,0.35);">
+                <div class="card-inner py-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">TOTAL REVIEWS</span>
+                        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                            <em class="icon ni ni-comments" style="font-size:20px;color:#fff;"></em>
+                        </div>
+                    </div>
+                    <div style="font-size:36px;font-weight:800;line-height:1;">{{ total_reviews }}</div>
+                    <div style="font-size:12px;opacity:0.8;margin-top:6px;">All submitted reviews</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card card-bordered">
-                <div class="card-inner text-center">
-                    <em class="icon ni ni-shield-alert text-danger fs-28"></em>
-                    <h6>Fake Reviews</h6>
-                    <h3>{{ fake_reviews }}</h3>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#e85347,#f07d78);color:#fff;box-shadow:0 4px 20px rgba(232,83,71,0.35);">
+                <div class="card-inner py-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">FAKE REVIEWS</span>
+                        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                            <em class="icon ni ni-shield-alert" style="font-size:20px;color:#fff;"></em>
+                        </div>
+                    </div>
+                    <div style="font-size:36px;font-weight:800;line-height:1;">{{ fake_reviews }}</div>
+                    <div style="font-size:12px;opacity:0.8;margin-top:6px;">Detected as fake</div>
                 </div>
             </div>
         </div>
 
     </div>
 
-
     <!-- FRAUD STATUS OVERVIEW -->
     <div class="row g-4 mb-4">
 
         <div class="col-md-4">
-            <div class="card card-bordered text-center">
-                <div class="card-inner">
-                    <h6>Fraud Apps</h6>
-                    <h2 class="text-danger">{{ fraud_apps }}</h2>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#e85347,#f07d78);color:#fff;box-shadow:0 4px 20px rgba(232,83,71,0.35);">
+                <div class="card-inner py-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">FRAUD APPS</span>
+                        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                            <em class="icon ni ni-cross-circle" style="font-size:20px;color:#fff;"></em>
+                        </div>
+                    </div>
+                    <div style="font-size:36px;font-weight:800;line-height:1;">{{ fraud_apps }}</div>
+                    <div style="font-size:12px;opacity:0.8;margin-top:6px;">Flagged as fraud</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card card-bordered text-center">
-                <div class="card-inner">
-                    <h6>Suspicious Apps</h6>
-                    <h2 class="text-warning">{{ suspicious_apps }}</h2>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#f4bd0e,#f9d44a);color:#fff;box-shadow:0 4px 20px rgba(244,189,14,0.35);">
+                <div class="card-inner py-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">SUSPICIOUS APPS</span>
+                        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                            <em class="icon ni ni-alert" style="font-size:20px;color:#fff;"></em>
+                        </div>
+                    </div>
+                    <div style="font-size:36px;font-weight:800;line-height:1;">{{ suspicious_apps }}</div>
+                    <div style="font-size:12px;opacity:0.8;margin-top:6px;">Under observation</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card card-bordered text-center">
-                <div class="card-inner">
-                    <h6>Genuine Apps</h6>
-                    <h2 class="text-success">{{ genuine_apps }}</h2>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#1ee0ac,#4eedc4);color:#fff;box-shadow:0 4px 20px rgba(30,224,172,0.35);">
+                <div class="card-inner py-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">GENUINE APPS</span>
+                        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                            <em class="icon ni ni-check-circle" style="font-size:20px;color:#fff;"></em>
+                        </div>
+                    </div>
+                    <div style="font-size:36px;font-weight:800;line-height:1;">{{ genuine_apps }}</div>
+                    <div style="font-size:12px;opacity:0.8;margin-top:6px;">Verified genuine</div>
                 </div>
             </div>
         </div>

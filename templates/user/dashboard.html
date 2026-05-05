@@ -22,80 +22,66 @@
       <div class="nk-block">
         <div class="row g-gs">
 
+          <!-- Total Apps -->
           <div class="col-sm-6 col-lg-3">
-            <div class="card card-bordered">
-              <div class="card-inner">
-                <div class="card-title-group align-start mb-2">
-                  <div class="card-title">
-                    <h6 class="subtitle">Total Apps</h6>
-                  </div>
-                  <div class="card-tools">
-                    <em class="card-hint-icon icon ni ni-mobile fs-22px text-primary"></em>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#6576ff,#8e9dff);color:#fff;box-shadow:0 4px 20px rgba(101,118,255,0.35);">
+              <div class="card-inner py-4 px-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">TOTAL APPS</span>
+                  <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                    <em class="icon ni ni-mobile" style="font-size:20px;color:#fff;"></em>
                   </div>
                 </div>
-                <div class="card-amount">
-                  <span class="amount fs-28px fw-bold">{{ total_apps }}</span>
-                </div>
-                <div class="invest-data-ck">
-                  <p class="text-soft mt-1">On platform</p>
-                </div>
+                <div style="font-size:36px;font-weight:800;line-height:1;">{{ total_apps }}</div>
+                <div style="font-size:12px;opacity:0.8;margin-top:6px;">Available on platform</div>
               </div>
             </div>
           </div>
 
+          <!-- My Reviews -->
           <div class="col-sm-6 col-lg-3">
-            <div class="card card-bordered h-100">
-              <div class="card-inner">
-                <div class="card-title-group align-start mb-2">
-                  <div class="card-title">
-                    <h6 class="subtitle">My Reviews</h6>
-                  </div>
-                  <div class="card-tools">
-                    <em class="card-hint-icon icon ni ni-edit fs-22px text-info"></em>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#09c2de,#4dd9ec);color:#fff;box-shadow:0 4px 20px rgba(9,194,222,0.35);">
+              <div class="card-inner py-4 px-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">MY REVIEWS</span>
+                  <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                    <em class="icon ni ni-edit" style="font-size:20px;color:#fff;"></em>
                   </div>
                 </div>
-                <div class="card-amount">
-                  <span class="amount fs-28px fw-bold">{{ total_reviews }}</span>
-                </div>
-                <p class="text-soft mt-1">Total submitted</p>
+                <div style="font-size:36px;font-weight:800;line-height:1;">{{ total_reviews }}</div>
+                <div style="font-size:12px;opacity:0.8;margin-top:6px;">Total submitted</div>
               </div>
             </div>
           </div>
 
+          <!-- Duplicate Reviews -->
           <div class="col-sm-6 col-lg-3">
-            <div class="card card-bordered h-100">
-              <div class="card-inner">
-                <div class="card-title-group align-start mb-2">
-                  <div class="card-title">
-                    <h6 class="subtitle">Duplicate Reviews</h6>
-                  </div>
-                  <div class="card-tools">
-                    <em class="card-hint-icon icon ni ni-copy fs-22px text-warning"></em>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#f4bd0e,#f9d44a);color:#fff;box-shadow:0 4px 20px rgba(244,189,14,0.35);">
+              <div class="card-inner py-4 px-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">DUPLICATE REVIEWS</span>
+                  <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                    <em class="icon ni ni-copy" style="font-size:20px;color:#fff;"></em>
                   </div>
                 </div>
-                <div class="card-amount">
-                  <span class="amount fs-28px fw-bold">{{ duplicate_count }}</span>
-                </div>
-                <p class="text-soft mt-1">Flagged as duplicate</p>
+                <div style="font-size:36px;font-weight:800;line-height:1;">{{ duplicate_count }}</div>
+                <div style="font-size:12px;opacity:0.8;margin-top:6px;">Flagged as duplicate</div>
               </div>
             </div>
           </div>
 
+          <!-- Fake Flagged -->
           <div class="col-sm-6 col-lg-3">
-            <div class="card card-bordered h-100">
-              <div class="card-inner">
-                <div class="card-title-group align-start mb-2">
-                  <div class="card-title">
-                    <h6 class="subtitle">Fake Flagged</h6>
-                  </div>
-                  <div class="card-tools">
-                    <em class="card-hint-icon icon ni ni-alert fs-22px text-danger"></em>
+            <div class="card h-100" style="border:none;border-radius:16px;background:linear-gradient(135deg,#e85347,#f07d78);color:#fff;box-shadow:0 4px 20px rgba(232,83,71,0.35);">
+              <div class="card-inner py-4 px-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span style="font-size:13px;font-weight:600;opacity:0.85;letter-spacing:0.5px;">FAKE FLAGGED</span>
+                  <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+                    <em class="icon ni ni-alert" style="font-size:20px;color:#fff;"></em>
                   </div>
                 </div>
-                <div class="card-amount">
-                  <span class="amount fs-28px fw-bold">{{ fake_count }}</span>
-                </div>
-                <p class="text-soft mt-1">Detected as fake</p>
+                <div style="font-size:36px;font-weight:800;line-height:1;">{{ fake_count }}</div>
+                <div style="font-size:12px;opacity:0.8;margin-top:6px;">Detected as fake</div>
               </div>
             </div>
           </div>

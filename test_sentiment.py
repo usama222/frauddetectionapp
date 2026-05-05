@@ -16,6 +16,7 @@ reviews = [
     "Horrible horrible horrible worst worst scam fraud",
     "Excellent excellent excellent wonderful brilliant superb",
     "Awful terrible disgusting horrible worst ever seen",
+    "The app crashes sometimes and loading is slow. Needs improvement."
 ]
 
 print("-" * 85)
@@ -24,9 +25,9 @@ print("-" * 85)
 
 for r in reviews:
     label, score, fake_prob = analyze_sentiment(r)
-    flag = "<<< FAKE" if fake_prob >= 0.7 else "Genuine"
+    flag = "<<< FAKE" if fake_prob >= 0.65 else "Genuine"
     print(f"{r[:45]:<45} {label:<12} {str(score):<8} {str(fake_prob):<10} {flag}")
 
 print("-" * 85)
-print("\nThreshold: fake_probability >= 0.7 = FAKE, else Genuine")
+print("\nThreshold: fake_probability >= 0.65 = FAKE, else Genuine")
 print("Score > 0.05 = Positive | Score < -0.05 = Negative | else Neutral")

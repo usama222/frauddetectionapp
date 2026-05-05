@@ -48,7 +48,7 @@ def add_review():
             fake_probability=fake_prob
         )
 
-        review.is_fake = True if fake_prob >= 0.7 else False
+        review.is_fake = True if fake_prob >= 0.65 else False
 
         db.session.add(sentiment)
         db.session.commit()
