@@ -22,7 +22,7 @@ with app.app_context():
         name="Ahmed",
         email="admin@example.com",
         password=generate_password_hash("admin123"),
-        role_id=admin_role.role_id
+        role_id=admin_role.id
     )
 
     db.session.add(admin_user)
