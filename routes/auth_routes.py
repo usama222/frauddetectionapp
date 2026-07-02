@@ -88,7 +88,7 @@ def admin_dashboard():
     # =======================
     user_months = Counter(
         u.created_at.strftime('%Y-%m')
-        for u in User.query.all()
+        for u in User.query.filter(User.created_at.isnot(None)).all()
     )
 
     user_chart_labels = sorted(user_months.keys())
