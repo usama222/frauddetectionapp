@@ -38,3 +38,7 @@ dist/
 
 # 🔹 MySQL dump / local DB folder (your case)
 database file mysql/
+
+# 🔹 Uploaded files (applications, etc)
+static/uploads/applications/
+static/uploads/
